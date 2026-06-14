@@ -2,6 +2,7 @@ package xyz.nietongxue.cfood.domain
 
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
+import xyz.nietongxue.common.base.Id
 import kotlin.time.Duration.Companion.minutes
 
 
@@ -10,27 +11,31 @@ data class Plan(val operations: List<Operation>) {
 
 class PlanExecution(val plan: Plan) {
     val logger = org.slf4j.LoggerFactory.getLogger(this::class.java)!!
-    val operations = mutableListOf<OperationAndState>().also {
+    val operations = mutableListOf<Operation>().also {
         it.addAll(
-            plan.operations.map { it to OperationExecutionState.Waiting }
+            plan.operations
         )
+    }
+    val states = mutableMapOf<Id, OperationExecutionState>().also {
+        it.putAll(plan.operations.map { it.id to OperationExecutionState.Waiting })
+
     }
 
     fun dispatch(station: Station): Operation? {
-        val operation = operations.firstOrNull { it.second == OperationExecutionState.Waiting }
-        return operation?.first?.also {
-            changeState(operation.first, OperationExecutionState.Assigned(station))
+        val operation = operations.firstOrNull {
+            states[it.id] == OperationExecutionState.Waiting && station.accept(it)
+        }
+        return operation?.let {
+            states[it.id] = OperationExecutionState.Assigned(station)
+            it
         }
     }
 
     fun finish(operation: Operation) {
-        changeState(operation, OperationExecutionState.Finished)
+        states[operation.id] = OperationExecutionState.Finished
     }
 
-    fun changeState(operation: Operation, newState: OperationExecutionState) {
-        operations.removeIf { it.first == operation }
-        operations.add(operation to newState)
-    }
+
 }
 typealias OperationAndState = Pair<Operation, OperationExecutionState>
 

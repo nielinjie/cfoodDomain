@@ -5,34 +5,6 @@ import xyz.nietongxue.common.base.HasId
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7
 
-@Service
-class LocationService {
-    val objectLocations: MutableMap<String, Location> = mutableMapOf()
-    fun getLocation(objectId: Id): Location? {
-        return objectLocations[objectId]
-    }
-
-    fun getByName(name: String): Location? {
-        return objectLocations.values.firstOrNull { it is Location.NamedLocation && it.name == name }
-    }
-}
-
-interface Location {
-    data class NamedLocation(val name: String) : Location
-
-}
-
-class Object(override val id: Id, val productId: Id) : HasId {}
-
-@Service
-class ObjectService(
-    val productService: ProductService
-) {
-    val objects = mutableListOf<Object>()
-    fun getByProductId(productId: Id): List<Object> {
-        return objects.filter { it.productId == productId }
-    }
-}
 
 class LogisticTask(
     override val id: Id = v7(),
@@ -49,30 +21,24 @@ interface LogisticTaskState {
 
 @Service
 class LogisticService {
-    typealias TaskAndState = Pair<LogisticTask, LogisticTaskState>
 
-    val logisticTasks = mutableListOf<TaskAndState>()
+    val logisticTasks = mutableListOf<LogisticTask>()
+    val states = mutableMapOf<Id, LogisticTaskState>()
     fun logisticRequest(productId: String, quantity: Int, dest: Location) {
-        logisticTasks.add(
-            LogisticTask(
-                productId = productId,
-                quantity = quantity,
-                dest = dest
-            ) to LogisticTaskState.Waiting
-        )
+        val task = LogisticTask(productId = productId, quantity = quantity, dest = dest)
+        logisticTasks.add(task)
+        states[task.id] = LogisticTaskState.Waiting
     }
 
     fun dispatch(carryId: Id): LogisticTask? {
-        return logisticTasks.firstOrNull { it.second is LogisticTaskState.Waiting }.also {
-            if (it != null) {
-                logisticTasks.remove(it)
-                logisticTasks.add(it.first to LogisticTaskState.Processing(carryId, emptyList()))
-            }
-        }?.first
+        return logisticTasks.firstOrNull { task ->
+            states[task.id] == LogisticTaskState.Waiting
+        }?.also { task ->
+            states[task.id] = LogisticTaskState.Processing(carryId, listOf())
+        }
     }
 
     fun finish(task: LogisticTask) {
-        logisticTasks.removeIf { it.first == task }
-        logisticTasks.add(task to LogisticTaskState.Finished)
+        states[task.id] = LogisticTaskState.Finished
     }
 }

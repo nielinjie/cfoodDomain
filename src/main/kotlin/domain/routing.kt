@@ -34,13 +34,13 @@ data class RoutingOperation(
 
 @Service
 class RoutingService {
-    val routings = mutableListOf<Routing>()
+    val routingList = mutableListOf<Routing>()
     fun save(routing: Routing) {
-        routings.add(routing)
+        routingList.add(routing)
     }
 
     fun getByProductId(productId: Id): Routing? {
-        return routings.firstOrNull { it.productId == productId }
+        return routingList.firstOrNull { it.productId == productId }
     }
 
 }
