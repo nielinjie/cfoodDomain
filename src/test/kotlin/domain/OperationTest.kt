@@ -33,7 +33,10 @@ class OperationTest(
             status = OrderState.Waiting
         )
         orderService.accept(order)
-        val plan = orchestrateService.plan()
+        val plan = orchestrateService.plan
+        val execution = orchestrateService.execution
         println(plan)
+        println(execution)
+        println(execution?.operations)
     }
 }

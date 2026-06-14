@@ -5,7 +5,40 @@ import org.springframework.stereotype.Service
 import kotlin.time.Duration.Companion.minutes
 
 
-data class Plan(val operations: List<Operation>)
+data class Plan(val operations: List<Operation>) {
+}
+
+class PlanExecution(val plan: Plan) {
+    val logger = org.slf4j.LoggerFactory.getLogger(this::class.java)!!
+    val operations = mutableListOf<OperationAndState>().also {
+        it.addAll(
+            plan.operations.map { it to OperationExecutionState.Waiting }
+        )
+    }
+
+    fun dispatch(station: Station): Operation? {
+        val operation = operations.firstOrNull { it.second == OperationExecutionState.Waiting }
+        return operation?.first?.also {
+            changeState(operation.first, OperationExecutionState.Assigned(station))
+        }
+    }
+
+    fun finish(operation: Operation) {
+        changeState(operation, OperationExecutionState.Finished)
+    }
+
+    fun changeState(operation: Operation, newState: OperationExecutionState) {
+        operations.removeIf { it.first == operation }
+        operations.add(operation to newState)
+    }
+}
+typealias OperationAndState = Pair<Operation, OperationExecutionState>
+
+interface OperationExecutionState {
+    data object Waiting : OperationExecutionState
+    data class Assigned(val station: Station) : OperationExecutionState
+    data object Finished : OperationExecutionState
+}
 
 @Service
 class OrchestrateService(
@@ -14,9 +47,10 @@ class OrchestrateService(
     val bomService: BOMService,
     val orderService: OrderService
 ) {
-    val logger = org.slf4j.LoggerFactory.getLogger(this::class.java)
+    val logger = org.slf4j.LoggerFactory.getLogger(this::class.java)!!
 
     var plan: Plan? = null
+    var execution: PlanExecution? = null
     fun plan(): Plan {
         val order = orderService.getWaiting().firstOrNull() ?: error("no order")
         return order.lines.flatMap {
@@ -42,10 +76,12 @@ class OrchestrateService(
         }.let { Plan(it) }
     }
 
+
     @EventListener
     fun orderChanged(event: OrderEvent) {
         logger.info("order changed")
         plan = plan()
+        execution = PlanExecution(plan!!)
     }
 }
 

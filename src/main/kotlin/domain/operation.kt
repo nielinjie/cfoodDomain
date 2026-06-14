@@ -17,14 +17,7 @@ data class Operation(
     val product: Product,
     val consume: List<Consume>
 ) : HasId {
-    fun ready(): ReadyState {
-        return ReadyState.Ready
-    }
 
-    fun start() {}
-    fun state(): OperationState {
-        TODO()
-    }
 }
 data class Consume(val product: Product, val quantity: Int) {
 }
