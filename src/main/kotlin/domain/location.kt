@@ -64,6 +64,11 @@ interface Location {
     fun minus(location: Location): Vector {
         return this.position().minus(location.position())
     }
+
+    fun samePosition(location: Location): Boolean {
+        return this.position() == location.position()
+    }
+
 }
 
 

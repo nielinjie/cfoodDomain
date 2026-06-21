@@ -1,16 +1,20 @@
 package xyz.nietongxue.cfood.domain
 
-import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import xyz.nietongxue.common.base.HasId
 import xyz.nietongxue.common.base.Id
+import xyz.nietongxue.common.base.v7
 
-@Component
-class Shop(
-    val objectService: ObjectService
-) {
+/**
+ * 可以占有 obj 的东西。比如设备、车辆。
+ * 仓库应该不行。
+ * 订单行不行？操作行不行？现在是不行，这里的占有是物理占有，不是计划占有。
+ * 被物理占有了就不能被其他物理占有。
+ */
+
+interface Owner {
+    val id: Id
 }
-
 
 class Object(override val id: Id, val productId: Id) : HasId {}
 
@@ -22,17 +26,38 @@ class ObjectService(
     val objects = mutableListOf<Object>()
     val states = mutableMapOf<Id, ObjectState>()
     val locations = mutableMapOf<Id, Location>()
+
+    fun input(productId: Id, quantity: Int = 1, location: Location = Location.XY(0, 0)) {
+        for (i in 1..quantity) {
+            val obj = Object(id = v7(), productId = productId)
+            objects.add(obj)
+            states[obj.id] = ObjectState.Free
+            locations[obj.id] = location
+        }
+    }
+
+    fun get(id: Id): Object? = objects.find { it.id == id }
+
     fun getByProductId(productId: Id): List<Object> {
         return objects.filter { it.productId == productId }
     }
 
+    fun getOneFree(productId: Id): Object? {
+        return objects.find { it.productId == productId && states[it.id] == ObjectState.Free }
+    }
+
+    fun getLocation(objectId: Id): Location {
+        return locations[objectId]!!
+    }
+
+
     fun lock(objectId: Id, owner: Id): Object {
         val obj = objects.find { it.id == objectId }
         if (obj == null) {
-            throw Exception("object not found")
+            error("object not found")
         }
-        if (states[objectId] != ObjectState.Waiting) {
-            throw Exception("object is not waiting")
+        if (states[objectId] != ObjectState.Free) {
+            error("object is not waiting")
         }
         states[objectId] = ObjectState.Locked(owner)
         return obj
@@ -41,25 +66,23 @@ class ObjectService(
     fun release(objectId: Id, owner: Id) {
         val obj = objects.find { it.id == objectId }
         if (obj == null) {
-            throw Exception("object not found")
+            error("object not found")
         }
         if (states[objectId] != ObjectState.Locked(owner)) {
-            throw Exception("object is not locked by this owner")
+            error("object is not locked by this owner")
         }
-        states[objectId] = ObjectState.Waiting
+        states[objectId] = ObjectState.Free
     }
 
-    fun moveTo(objectId: Id, location: Location) {
-        val obj = objects.find { it.id == objectId }
-        if (obj == null) {
-            throw Exception("object not found")
-        }
-        locations[obj.id] = location
+    fun setLocation(objectId: Id, location: Location, owner: Id) {
+        require(states[objectId] == ObjectState.Locked(owner))
+        locations[objectId] = location
     }
+
 
 }
 
 interface ObjectState {
-    object Waiting : ObjectState
+    object Free : ObjectState
     data class Locked(val owner: Id) : ObjectState
 }
