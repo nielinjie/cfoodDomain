@@ -6,7 +6,7 @@ import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7
 
 
-class LogisticTask(
+data class LogisticTask(
     override val id: Id = v7(),
     val productId: Id,
     val quantity: Int,
@@ -42,3 +42,4 @@ class LogisticService {
         states[task.id] = LogisticTaskState.Finished
     }
 }
+
