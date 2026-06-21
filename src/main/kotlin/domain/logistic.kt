@@ -1,5 +1,6 @@
 package xyz.nietongxue.cfood.domain
 
+import org.slf4j.LoggerFactory.getLogger
 import org.springframework.stereotype.Service
 import xyz.nietongxue.common.base.HasId
 import xyz.nietongxue.common.base.Id
@@ -22,12 +23,15 @@ interface LogisticTaskState {
 @Service
 class LogisticService {
 
+    val logger = getLogger(this::class.java)
+
     val logisticTasks = mutableListOf<LogisticTask>()
     val states = mutableMapOf<Id, LogisticTaskState>()
     fun logisticRequest(productId: String, quantity: Int, dest: Location) {
         val task = LogisticTask(productId = productId, quantity = quantity, dest = dest)
         logisticTasks.add(task)
         states[task.id] = LogisticTaskState.Waiting
+        logger.info("logistic task created -  $task")
     }
 
     fun dispatch(carryId: Id): LogisticTask? {
@@ -35,11 +39,14 @@ class LogisticService {
             states[task.id] == LogisticTaskState.Waiting
         }?.also { task ->
             states[task.id] = LogisticTaskState.Processing(carryId, listOf())
+        }?.also {
+            logger.info("dispatch task - $it")
         }
     }
 
     fun finish(task: LogisticTask) {
         states[task.id] = LogisticTaskState.Finished
+        logger.info("finish task - $task")
     }
 }
 

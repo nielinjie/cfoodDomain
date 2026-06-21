@@ -1,5 +1,6 @@
 package xyz.nietongxue.cfood.domain
 
+import jakarta.annotation.PostConstruct
 import org.slf4j.LoggerFactory.getLogger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Scope
@@ -8,14 +9,16 @@ import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7
 
 
-class LoadAction(val location: Location, val obj: Id) : Action
-class UnloadAction(val location: Location) : Action
-class TaskStateUpdate(val taskId: String) : Action
+data class LoadAction(val location: Location, val obj: Id) : Action
+data class UnloadAction(val location: Location) : Action
+data class TaskStateUpdate(val taskId: String) : Action
+data class CheckTaskAction(val taskType: String = "Logistic") : Action
 
 @Component
 @Scope("prototype")
 class Carrier(
     val objectService: ObjectService,
+    val logisticService: LogisticService,
     @param:Autowired(required = false)
     val id: Id = v7(),
 ) : Actor() {
@@ -24,6 +27,13 @@ class Carrier(
     val speed: Int = 1
     var carrying: String? = null
     var task: LogisticTask? = null
+
+
+    @PostConstruct
+    fun init() {
+        this.accept(CheckTaskAction())
+    }
+
 
     fun LogisticTask.toActions(): List<Action> {
         val obj: Id = objectService.getOneFree(this.productId)!!.id
@@ -85,8 +95,27 @@ class Carrier(
             }
 
             is TaskStateUpdate -> {
+                require(this.task != null)
                 logger.info("任务执行完成 - ${action.taskId}")
+                logisticService.finish(this.task!!)
+                this.task = null
+                this.accept(CheckTaskAction())
                 ActionResult(action, true)
+            }
+
+            is CheckTaskAction -> {
+                require(this.task == null)
+                require(action.taskType == "Logistic")
+                val task = logisticService.dispatch(this.id)
+
+                if (task != null) {
+                    logger.info("发现任务 - $task")
+                    this.accept(task)
+                    ActionResult(action, true)
+                } else {
+                    logger.info("无任务")
+                    ActionResult(action, false)
+                }
             }
 
             else -> error("not supported")
