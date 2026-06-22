@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory.getLogger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
+import xyz.nietongxue.cfood.domain.path.GameMap
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7
 
@@ -21,6 +22,7 @@ class Carrier(
     val logisticService: LogisticService,
     @param:Autowired(required = false)
     val id: Id = v7(),
+    val localMap: GameMap,
 ) : Actor() {
     val logger = getLogger(this::class.java)!!
     var location: Location = Location.XY(0, 0)
@@ -39,9 +41,23 @@ class Carrier(
         val obj: Id = objectService.getOneFree(this.productId)!!.id
         val objLocation: Location = objectService.getLocation(obj)
         return listOf(
-            MoveAction(objLocation),
+            MoveAction(
+                objLocation,
+                PathPlan.create(
+                    this@Carrier.location.position(),
+                    objLocation.position(),
+                    localMap
+                ) // TODO 目前是静态寻路，在任务接受时已经确认了路线计划。
+            ),
             LoadAction(objLocation, obj),
-            MoveAction(this.dest),
+            MoveAction(
+                this.dest,
+                PathPlan.create(
+                    objLocation.position(),
+                    this.dest.position(),
+                    localMap
+                )// TODO 目前是静态寻路，在任务接受时已经确认了路线计划。
+            ),
             UnloadAction(this.dest),
             TaskStateUpdate(this.id)
         )
@@ -61,8 +77,10 @@ class Carrier(
                     logger.info("到达目的地 - ${action.dest}")
                 }
                 else {
-                    val stepVector = (action.dest.minus(this.location)).step(speed)
-                    this.location = this.location.add(stepVector)
+                    val index = action.plan.positions.indexOf(this.location.position())
+                    require(index >= 0)
+                    val next = action.plan.positions[index + speed]
+                    this.location = Location.XY(next.x, next.y)
                     if (this.carrying != null)
                         objectService.setLocation(this.carrying!!, this.location, this.id)
                     logger.info("移动中，已到 - ${this.location}")

@@ -4,9 +4,13 @@ import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory.getLogger
 import org.springframework.beans.factory.getBean
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.ApplicationContext
+import org.springframework.context.annotation.Bean
 import org.springframework.test.context.TestConstructor
 import org.springframework.test.context.TestConstructor.AutowireMode
+import xyz.nietongxue.cfood.domain.path.GameMap
+import xyz.nietongxue.cfood.domain.path.LocalMap
 
 
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
@@ -24,6 +28,14 @@ class LogisticTest(
 ) {
     val logger = getLogger(this::class.java)!!
 
+
+    @TestConfiguration
+    class Configure(){
+        @Bean
+        fun localMap(): GameMap{
+            return LocalMap(10, 10)
+        }
+    }
 
 
     @Test
