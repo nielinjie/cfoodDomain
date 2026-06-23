@@ -1,6 +1,8 @@
 package xyz.nietongxue.cfood.domain
 
+import arrow.core.Either
 import org.slf4j.LoggerFactory
+import xyz.nietongxue.common.response.ResponseChainResult
 
 interface Action {
 }//state, result
@@ -17,6 +19,7 @@ class ActionGroup(val seq: List<Action>, exceptionAction: Action) { //TODO æ”¯æŒ
 abstract class Actor {
     val queue: MutableList<Action> = mutableListOf()
     val history: MutableList<Action> = mutableListOf()
+    abstract val actCapabilities: List<ActCapability>
     fun current(): Action? = queue.firstOrNull()
     fun accept(vararg action: Action) {
         queue.addAll(action)
@@ -35,5 +38,19 @@ abstract class Actor {
         }
     }
 
-    abstract fun doIt(action: Action): ActionResult
+    fun doIt(action: Action): ActionResult {
+        for (worker in actCapabilities) {
+            when (val result = worker.act(action)) {
+                is Either.Left<*> -> continue
+                is Either.Right<*> -> return result.value as ActionResult
+            }
+        }
+        error("no worker for $action")
+    }
+
+    abstract val id: String
+}
+
+abstract class ActCapability {
+    abstract fun act(action: Action): Either<ResponseChainResult.NotMe, ActionResult>
 }
