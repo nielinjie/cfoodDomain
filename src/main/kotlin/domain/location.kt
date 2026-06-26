@@ -45,11 +45,11 @@ data class Vector(val x: Int, val y: Int) {
 
 
 interface Location {
-    data class NamedLocation(val name: String) : Location {
-        override fun position(): Position {
-            TODO("Not yet implemented")
-        }
-    }
+//    data class NamedLocation(val name: String) : Location {
+//        override fun position(): Position {
+//            TODO("Not yet implemented")
+//        }
+//    }
 
     data class XY(val x: Int, val y: Int) : Location {
         override fun position(): Position {

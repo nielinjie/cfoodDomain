@@ -36,7 +36,8 @@ class StationTest(
         orderService.accept(order)
         val stove = Stove(
             name = "main",
-            Location.NamedLocation("mainStove")
+            id = v7(),
+            orchestrateService
         )
         val operation = orchestrateService.execution!!.dispatch(stove)!!
         println(operation)
@@ -60,7 +61,8 @@ class StationTest(
         orderService.accept(order)
         val stove = Stove(
             name = "main",
-            Location.NamedLocation("mainStove")
+            id = v7(),
+            orchestrateService
         )
         val operation = orchestrateService.execution!!.dispatch(stove)!!
         val consume = operation.consume.groupBy { it.product.id }.map {
@@ -71,8 +73,8 @@ class StationTest(
         }
         val task = logisticService.dispatch(v7())
         println(task)
-        println(logisticService.logisticTasks)
+        println(logisticService.tasks)
         logisticService.finish(task!!)
-        println(logisticService.logisticTasks)
+        println(logisticService.tasks)
     }
 }

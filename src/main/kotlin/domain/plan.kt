@@ -3,6 +3,7 @@ package xyz.nietongxue.cfood.domain
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import xyz.nietongxue.common.base.Id
+import kotlin.collections.set
 import kotlin.time.Duration.Companion.minutes
 
 
@@ -23,10 +24,10 @@ class PlanExecution(val plan: Plan) {
 
     fun dispatch(station: Station): Operation? {
         val operation = operations.firstOrNull {
-            states[it.id] == OperationExecutionState.Waiting && station.accept(it)
+            states[it.id] == OperationExecutionState.Waiting
         }
         return operation?.let {
-            states[it.id] = OperationExecutionState.Assigned(station)
+            states[it.id] = OperationExecutionState.Assigned
             it
         }
     }
@@ -41,7 +42,7 @@ typealias OperationAndState = Pair<Operation, OperationExecutionState>
 
 interface OperationExecutionState {
     data object Waiting : OperationExecutionState
-    data class Assigned(val station: Station) : OperationExecutionState
+    data object Assigned : OperationExecutionState
     data object Finished : OperationExecutionState
 }
 
@@ -51,11 +52,13 @@ class OrchestrateService(
     val routingService: RoutingService,
     val bomService: BOMService,
     val orderService: OrderService
-) {
+) : TaskManager {
     val logger = org.slf4j.LoggerFactory.getLogger(this::class.java)!!
 
     var plan: Plan? = null
     var execution: PlanExecution? = null
+    val tasks = mutableListOf<OperationTask>()
+    val states = mutableMapOf<Id, TaskState>()
     fun plan(): Plan {
         val order = orderService.getWaiting().firstOrNull() ?: error("no order")
         return order.lines.flatMap {
@@ -87,6 +90,21 @@ class OrchestrateService(
         logger.info("order changed")
         plan = plan()
         execution = PlanExecution(plan!!)
+    }
+
+    override fun dispatch(acceptId: Id): OperationTask? {
+        return tasks.firstOrNull { task ->
+            states[task.id] == TaskState.Waiting
+        }?.also { task ->
+            states[task.id] = ProcessingOperation(acceptId)
+        }?.also {
+            logger.info("dispatch task - $it")
+        }
+    }
+
+    override fun finish(task: Task) {
+        require(task is OperationTask)
+        states[task.id] = TaskState.Finished
     }
 }
 

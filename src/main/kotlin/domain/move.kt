@@ -22,7 +22,8 @@ class MoveAction(val dest: Location, var plan: PathPlan) : Action
 interface HasLocation {
     val location: Location
 }
-interface Movable: HasLocation {
+
+interface Movable : HasLocation {
     override var location: Location
     var speed: Int
 }
@@ -45,7 +46,7 @@ class MoveCapability(val actor: Actor, val objectService: ObjectService) : ActCa
                     else {
                         val index = action.plan.positions.indexOf(actor.location.position())
                         require(index >= 0)
-                        val next = action.plan.positions[index + actor.speed]
+                        val next = action.plan.positions[maxOf(index + actor.speed, action.plan.positions.size - 1)]
                         actor.location = Location.XY(next.x, next.y)
                         if (actor is Carriable && actor.carrying != null)
                             objectService.setLocation(
