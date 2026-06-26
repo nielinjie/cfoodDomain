@@ -78,7 +78,7 @@ class LogisticTaskWorkerCapability(
                 logger.info("任务执行完成 - ${action.taskId}")
                 logisticService.finish(actor.task!!)
                 actor.task = null
-                ActionResult(action, true).right()
+                ActionResult(ActionEffect.Consume).right()
             }
 
             else -> Either.Left(ResponseChainResult.NotMe)

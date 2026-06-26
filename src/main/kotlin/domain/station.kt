@@ -68,11 +68,13 @@ class Stove(
                         val startedTime = action.startedTime
                         val operation = action.operation
                         val time = System.currentTimeMillis() - startedTime
-                        val progress = time / operation.time.toLong(DurationUnit.MILLISECONDS)
+                        val progress = (time.toDouble() / operation.time.toLong(DurationUnit.MILLISECONDS)) * 100
                         if (progress >= 100) {
-                            ActionResult(action, true).right()
+                            ActionResult(ActionEffect.Consume).right()
                         } else {
-                            ActionResult(action, false).right()
+                            ActionResult(ActionEffect.ReplaceHead(action.also {
+                                it.progress = progress.toInt()
+                            })).right()
                         }
                     }
 
@@ -92,7 +94,7 @@ class Stove(
                         logger.info("任务执行完成 - ${action.taskId}")
                         orchestrateService.finish(actor.operationTask!!)
                         actor.operationTask = null
-                        ActionResult(action, true).right()
+                        ActionResult(ActionEffect.Consume).right()
                     }
 
                     else -> Either.Left(ResponseChainResult.NotMe)

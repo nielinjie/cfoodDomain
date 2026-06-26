@@ -40,13 +40,13 @@ class MoveCapability(val actor: Actor, val objectService: ObjectService) : ActCa
         return if (actor is Movable)
             when (action) {
                 is MoveAction -> {
-                    if (actor.location.samePosition(action.dest)) ActionResult(action, true).also {
+                    if (actor.location.samePosition(action.dest)) ActionResult(ActionEffect.Consume).also {
                         logger.info("到达目的地 - ${action.dest}")
                     }.right()
                     else {
                         val index = action.plan.positions.indexOf(actor.location.position())
                         require(index >= 0)
-                        val next = action.plan.positions[maxOf(index + actor.speed, action.plan.positions.size - 1)]
+                        val next = action.plan.positions[minOf(index + actor.speed, action.plan.positions.size - 1)]
                         actor.location = Location.XY(next.x, next.y)
                         if (actor is Carriable && actor.carrying != null)
                             objectService.setLocation(
@@ -56,7 +56,7 @@ class MoveCapability(val actor: Actor, val objectService: ObjectService) : ActCa
                             )
                         logger.info("移动中，已到 - ${actor.location}")
                         ActionResult(
-                            action, false
+                            ActionEffect.ReplaceHead(action)
                         ).right()
                     }
                 }
@@ -78,7 +78,7 @@ class CarryCapability(val actor: Actor, val objectService: ObjectService) : ActC
                     require(objectService.getLocation(action.obj).samePosition(actor.location))
                     actor.carrying = action.obj
                     objectService.lock(action.obj, actor.id)
-                    ActionResult(action, true).also {
+                    ActionResult(ActionEffect.Consume).also {
                         logger.info("载入对象 - ${action.obj}")
                     }.right()
                 }
@@ -89,7 +89,7 @@ class CarryCapability(val actor: Actor, val objectService: ObjectService) : ActC
                     val obj = actor.carrying
                     actor.carrying = null
                     objectService.release(obj!!, actor.id)
-                    ActionResult(action, true).also {
+                    ActionResult(ActionEffect.Consume).also {
                         logger.info("卸载对象 - $obj")
                     }.right()
                 }

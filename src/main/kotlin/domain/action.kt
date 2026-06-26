@@ -4,11 +4,17 @@ import arrow.core.Either
 import org.slf4j.LoggerFactory
 import xyz.nietongxue.common.response.ResponseChainResult
 
+interface ActionEffect {
+    data class ReplaceHead(val action: Action) : ActionEffect
+    data object Consume : ActionEffect
+    data class Append(val actions: List<Action>) : ActionEffect
+}
+
 interface Action {
 }//state, result
 
 //当 finished = true，renewAction 被忽略。否则，renewAction 被塞在 queue 的第一个。
-class ActionResult(val renewAction: Action, val isFinished: Boolean)
+class ActionResult(val effect: ActionEffect)
 
 class ActionGroup(val seq: List<Action>, exceptionAction: Action) { //TODO 支持按组运行，没有应用。
     val logger = LoggerFactory.getLogger(this::class.java)!!
@@ -43,12 +49,18 @@ interface Actor {
         }
         val act = current() ?: return
         this.doOneAction(act).also { //当 finished = true，renewAction 被忽略。否则，renewAction 被塞在 queue 的第一个。
+            when (it.effect) {
+                is ActionEffect.ReplaceHead -> {
+                    queue[0] = it.effect.action
+                }
 
-            if (it.isFinished) {
-                history.add(it.renewAction)
-                queue.removeAt(0)
-            } else {
-                queue[0] = it.renewAction
+                is ActionEffect.Append -> {
+                    queue.addAll(it.effect.actions)
+                }
+
+                is ActionEffect.Consume -> {
+                    queue.removeAt(0)
+                }
             }
         }
     }
