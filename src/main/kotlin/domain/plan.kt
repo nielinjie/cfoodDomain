@@ -3,6 +3,7 @@ package xyz.nietongxue.cfood.domain
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import xyz.nietongxue.common.base.Id
+import xyz.nietongxue.common.base.v7
 import kotlin.collections.set
 import kotlin.time.Duration.Companion.minutes
 
@@ -60,7 +61,7 @@ class OrchestrateService(
     val tasks = mutableListOf<OperationTask>()
     val states = mutableMapOf<Id, TaskState>()
     fun plan(): Plan {
-        val order = orderService.getWaiting().firstOrNull() ?: error("no order")
+        val order = orderService.getWaiting().firstOrNull() ?: error("no order") //TODO 没有处理遗留任务。
         return order.lines.flatMap {
             val product = it.productId
             val routing = routingService.getByProductId(product)!!
@@ -72,7 +73,7 @@ class OrchestrateService(
                         Operation(
                             code = routingOperation.code,
                             name = routingOperation.name,
-                            time = 1.minutes,
+                            time = routingOperation.time,
                             product = productService.getById(product)!!,
                             consume = consume.map { component ->
                                 Consume(productService.getById(component.componentId)!!, component.quantity)
@@ -88,8 +89,21 @@ class OrchestrateService(
     @EventListener
     fun orderChanged(event: OrderEvent) {
         logger.info("order changed")
-        plan = plan()
+        plan = plan() //TODO 没有处理遗留任务。
         execution = PlanExecution(plan!!)
+        tasksFromExecution().also {
+            tasks.addAll(it)
+            states.putAll(it.map { it.id to TaskState.Waiting })
+        }
+    }
+
+    fun tasksFromExecution(): List<OperationTask> {
+        return execution!!.operations.map { operation ->
+            OperationTask(
+                id = v7(),
+                operation = operation
+            )
+        }
     }
 
     override fun dispatch(acceptId: Id): OperationTask? {

@@ -1,5 +1,6 @@
 package xyz.nietongxue.cfood.domain
 
+import jakarta.annotation.PostConstruct
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE
@@ -18,7 +19,12 @@ class Carrier(
     @param:Autowired(required = false)
     override val id: Id = v7(),
     val localMap: GameMap,
-) : Actor, TaskWatcher, Movable, Carriable, LogisticTaskHandle {
+) : Actor, Movable, Carriable, LogisticTaskHandle {
+
+    @PostConstruct
+    fun init() {
+        queue.add(CheckTaskAction)
+    }
 
     val logger = LoggerFactory.getLogger(this::class.java)!!
 
@@ -35,47 +41,7 @@ class Carrier(
     override val actCapabilities: List<ActCapability> = listOf(
         MoveCapability(this, objectService),
         CarryCapability(this, objectService),
-        LogisticTaskWorkerCapability(this, logisticService)
-    )
-
-    fun LogisticTask.toActions(actor: Movable): List<Action> {
-        val obj: Id = objectService.getOneFree(this.productId)!!.id
-        val objLocation: Location = objectService.getLocation(obj)
-        return listOf(
-            MoveAction(
-                objLocation,
-                PathPlan.create(
-                    actor.location.position(),
-                    objLocation.position(),
-                    localMap
-                ) // TODO 目前是静态寻路，在任务接受时已经确认了路线计划。
-            ),
-            LoadAction(objLocation, obj),
-            MoveAction(
-                this.dest,
-                PathPlan.create(
-                    objLocation.position(),
-                    this.dest.position(),
-                    localMap
-                )// TODO 目前是静态寻路，在任务接受时已经确认了路线计划。
-            ),
-            UnloadAction(this.dest),
-            TaskStateUpdate(this.id)
-        )
-    }
-
-    override val taskWatchingList: List<TaskWatching> = listOf(
-        object : TaskWatching {
-            override fun pull() {
-                if (this@Carrier.task != null) return
-                val task = logisticService.dispatch(this@Carrier.id)
-                if (task != null) {
-                    this@Carrier.task = task
-                    logger.info("接受任务 - $task")
-                    accept(*task.toActions(this@Carrier).toTypedArray<Action>())
-                }
-            }
-        }
+        LogisticTaskWorkerCapability(this, logisticService, objectService, localMap)
     )
 
 

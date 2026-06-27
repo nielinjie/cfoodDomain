@@ -30,16 +30,16 @@ class LogisticTest(
 
 
     @TestConfiguration
-    class Configure(){
+    class Configure() {
         @Bean
-        fun localMap(): GameMap{
+        fun localMap(): GameMap {
             return LocalMap(10, 10)
         }
     }
 
 
     @Test
-    fun autoGetTask(){
+    fun autoGetTask() {
         val carrier = applicationContext.getBean<Carrier>()
         objectService.input(this.egg.id, 10, location = Location.XY(2, 4))
         logisticService.logisticRequest(this.egg.id, 1, Location.XY(6, 1))
@@ -47,6 +47,21 @@ class LogisticTest(
             carrier.tick()
             Thread.sleep(100)
         }
+    }
+
+    @Test
+    fun autoGetTaskStation() {
+        val carrier = applicationContext.getBean<Carrier>()
+        val station = applicationContext.getBean<Stove>().also {
+            it.location = Location.XY(5, 5)
+        }
+        objectService.input(this.egg.id, 10, location = Location.XY(2, 4))
+        logisticService.logisticTransformRequest(this.egg.id, 1, station)
+        for (i in 1..30) {
+            carrier.tick()
+            Thread.sleep(100)
+        }
+
     }
 
     /**
@@ -60,7 +75,7 @@ class LogisticTest(
         for (i in 1..60) {
             carrier.tick()
             Thread.sleep(100)
-            if(i == 30){
+            if (i == 30) {
                 logisticService.logisticRequest(this.egg.id, 1, Location.XY(5, 3))
             }
         }
@@ -78,7 +93,7 @@ class LogisticTest(
         for (i in 1..60) {
             carrier.tick()
             Thread.sleep(100)
-            if(i == 10){
+            if (i == 10) {
                 logisticService.logisticRequest(this.egg.id, 1, Location.XY(5, 3))
             }
         }
@@ -97,7 +112,7 @@ class LogisticTest(
             carrier.tick()
             carrier2.tick()
             Thread.sleep(100)
-            if(i == 10){
+            if (i == 10) {
                 logisticService.logisticRequest(this.egg.id, 1, Location.XY(5, 3))
             }
         }

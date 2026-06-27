@@ -30,6 +30,8 @@ interface Movable : HasLocation {
 
 data class LoadAction(val location: Location, val obj: Id) : Action
 data class UnloadAction(val location: Location) : Action
+
+data class TransformAction(val location: Location, val obj: Id, val accepter: Station) : Action
 interface Carriable {
     var carrying: String?
 }
@@ -91,6 +93,18 @@ class CarryCapability(val actor: Actor, val objectService: ObjectService) : ActC
                     objectService.release(obj!!, actor.id)
                     ActionResult(ActionEffect.Consume).also {
                         logger.info("卸载对象 - $obj")
+                    }.right()
+                }
+
+                is TransformAction -> {
+                    require(action.location.samePosition(actor.location))
+                    require(action.location.samePosition(action.accepter.location))
+                    require(actor.carrying != null)
+                    val obj = actor.carrying
+                    actor.carrying = null
+                    objectService.transfer(obj!!, action.accepter.id, actor.id)
+                    ActionResult(ActionEffect.Consume).also {
+                        logger.info("转交对象 - $obj to ${action.accepter.id}")
                     }.right()
                 }
 

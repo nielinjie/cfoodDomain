@@ -5,16 +5,48 @@ import org.slf4j.LoggerFactory
 import xyz.nietongxue.common.response.ResponseChainResult
 
 interface ActionEffect {
-    data class ReplaceHead(val action: Action) : ActionEffect
-    data object Consume : ActionEffect
-    data class Append(val actions: List<Action>) : ActionEffect
+    fun doWithQueue(queue: MutableList<Action>)
+    data class ReplaceHead(val action: Action) : ActionEffect {
+        override fun doWithQueue(queue: MutableList<Action>) {
+            queue[0] = action
+        }
+    }
+
+    data object Consume : ActionEffect {
+        override fun doWithQueue(queue: MutableList<Action>) {
+            queue.removeAt(0)
+        }
+    }
+
+    data class Append(val actions: List<Action>) : ActionEffect {
+        constructor(vararg actions: Action) : this(actions.toList())
+
+        override fun doWithQueue(queue: MutableList<Action>) {
+            queue.addAll(actions)
+        }
+    }
+
+    data class MoveToEnd(val action: Action) : ActionEffect {
+        override fun doWithQueue(queue: MutableList<Action>) {
+            queue.removeAt(0)
+            queue.add(action)
+        }
+    }
+
+    data class ListenLoop(val toActions: List<Action>, val listenAction: Action) : ActionEffect {
+        override fun doWithQueue(queue: MutableList<Action>) {
+            queue.addAll(toActions + listenAction)
+            queue.removeAt(0)
+        }
+    }
 }
 
 interface Action {
 }//state, result
 
-//当 finished = true，renewAction 被忽略。否则，renewAction 被塞在 queue 的第一个。
-class ActionResult(val effect: ActionEffect)
+data class ActionResult(val effects: List<ActionEffect>) {
+    constructor(vararg effects: ActionEffect) : this(effects.toList())
+}
 
 class ActionGroup(val seq: List<Action>, exceptionAction: Action) { //TODO 支持按组运行，没有应用。
     val logger = LoggerFactory.getLogger(this::class.java)!!
@@ -28,39 +60,12 @@ interface Actor {
     val history: MutableList<Action>
     val actCapabilities: List<ActCapability>
     fun current(): Action? = queue.firstOrNull()
-    fun accept(vararg action: Action) {
-        queue.addAll(action)
-    }
-
-    /**
-     * 在执行过程中，可以插入新的动作。
-     * act 可以更新队列。
-     */
-    fun insert(vararg action: Action) {
-        if (queue.isEmpty())
-            queue.addAll(action)
-        else
-            queue.addAll(1, action.toList())
-    }
 
     fun tick() {
-        if (this is TaskWatcher) {
-            this.tock()
-        }
         val act = current() ?: return
-        this.doOneAction(act).also { //当 finished = true，renewAction 被忽略。否则，renewAction 被塞在 queue 的第一个。
-            when (it.effect) {
-                is ActionEffect.ReplaceHead -> {
-                    queue[0] = it.effect.action
-                }
-
-                is ActionEffect.Append -> {
-                    queue.addAll(it.effect.actions)
-                }
-
-                is ActionEffect.Consume -> {
-                    queue.removeAt(0)
-                }
+        this.doOneAction(act).also {
+            it.effects.forEach {
+                it.doWithQueue(queue)
             }
         }
     }

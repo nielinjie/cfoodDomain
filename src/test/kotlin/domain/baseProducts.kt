@@ -1,6 +1,7 @@
 package xyz.nietongxue.cfood.domain
 
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 abstract class BaseProducts(
     val productService: ProductService,
@@ -24,7 +25,7 @@ abstract class BaseProducts(
     val tomatoEggOperation = RoutingOperation(
         code = "TOMATO_EGG_OP",
         name = "番茄鸡蛋",
-        time = 2.minutes,
+        time = 1.seconds,
         productId = tomatoEgg.id, actionDescription = ""
     )
     val tomatoEggRouting = Routing(

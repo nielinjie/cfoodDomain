@@ -1,7 +1,9 @@
 package xyz.nietongxue.cfood.domain
 
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.getBean
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.ApplicationContext
 import org.springframework.test.context.TestConstructor
 import org.springframework.test.context.TestConstructor.AutowireMode
 import xyz.nietongxue.common.base.v7
@@ -16,7 +18,8 @@ class StationTest(
     routingService: RoutingService,
     bomService: BOMService,
     val orchestrateService: OrchestrateService,
-    val logisticService: LogisticService
+    val logisticService: LogisticService,
+    val applicationContext: ApplicationContext
 ) : BaseProducts(
     productService, routingService, bomService
 ) {
@@ -35,7 +38,7 @@ class StationTest(
         )
         orderService.accept(order)
         val stove = Stove(
-            name = "main",
+//            name = "main",
             id = v7(),
             orchestrateService
         )
@@ -60,7 +63,7 @@ class StationTest(
         )
         orderService.accept(order)
         val stove = Stove(
-            name = "main",
+//            name = "main",
             id = v7(),
             orchestrateService
         )
@@ -76,5 +79,26 @@ class StationTest(
         println(logisticService.tasks)
         logisticService.finish(task!!)
         println(logisticService.tasks)
+    }
+
+    @Test
+    fun tasks(){
+        setupProducts()
+        val order = Order(
+            code = "TOMATO_EGG_ORDER",
+            lines = listOf(
+                OrderLine(productId = tomatoEgg.id, quantity = 1)
+            ),
+            requiredTime = LocalDateTime.now().plusHours(12),
+            status = OrderState.Waiting
+        )
+        orderService.accept(order)
+        val station = applicationContext.getBean<Stove>().also {
+            it.location = Location.XY(5, 5)
+        }
+        for (i in 1..30) {
+            station.tick()
+            Thread.sleep(100)
+        }
     }
 }

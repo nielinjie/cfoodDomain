@@ -74,6 +74,17 @@ class ObjectService(
         states[objectId] = ObjectState.Free
     }
 
+    fun transfer(objectId: Id, to: Id, owner: Id) {
+        val obj = objects.find { it.id == objectId }
+        if (obj == null) {
+            error("object not found")
+        }
+        if (states[objectId] != ObjectState.Locked(owner)) {
+            error("object is not locked by this owner")
+        }
+        states[objectId] = ObjectState.Locked(to)
+    }
+
     fun setLocation(objectId: Id, location: Location, owner: Id) {
         require(states[objectId] == ObjectState.Locked(owner))
         locations[objectId] = location

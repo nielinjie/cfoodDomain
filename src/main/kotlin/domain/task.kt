@@ -8,3 +8,8 @@ interface TaskManager {
     fun dispatch(acceptId: String): Task?
     fun finish(task: Task)
 }
+
+interface TaskState {
+    object Waiting : TaskState
+    object Finished : TaskState
+}
