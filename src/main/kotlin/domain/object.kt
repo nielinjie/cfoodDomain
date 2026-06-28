@@ -27,13 +27,17 @@ class ObjectService(
     val states = mutableMapOf<Id, ObjectState>()
     val locations = mutableMapOf<Id, Location>()
 
-    fun input(productId: Id, quantity: Int = 1, location: Location = Location.XY(0, 0)) {
+    fun input(productId: Id, quantity: Int = 1, location: Location ) {
         for (i in 1..quantity) {
             val obj = Object(id = v7(), productId = productId)
             objects.add(obj)
             states[obj.id] = ObjectState.Free
             locations[obj.id] = location
         }
+    }
+
+    fun product(productId: Id, quantity: Int = 1, location: Location) {
+        input(productId, quantity, location) //实际上是一样的，语义不同。
     }
 
     fun get(id: Id): Object? = objects.find { it.id == id }

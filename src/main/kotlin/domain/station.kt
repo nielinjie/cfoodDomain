@@ -95,7 +95,7 @@ class Stove(
                     if (progress >= 100) {
                         logger.info("任务完成 - ${action.operation}")
                         val product = operation.product
-                        objectService.input(product.id, 1)
+                        objectService.product(product.id, 1, this@Stove.location)
                         ActionResult(ActionEffect.Consume).right()
                     } else {
                         logger.info("任务进行中 - ${action.operation}, progress = $progress")
