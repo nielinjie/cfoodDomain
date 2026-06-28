@@ -3,17 +3,11 @@ package xyz.nietongxue.cfood.domain
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
-import jakarta.annotation.PostConstruct
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE
-import org.springframework.context.ApplicationContext
-import org.springframework.context.annotation.Scope
-import org.springframework.stereotype.Component
-import org.springframework.stereotype.Service
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7
 import xyz.nietongxue.common.response.ResponseChainResult
+import kotlin.math.log
 import kotlin.time.DurationUnit
 
 
@@ -24,28 +18,36 @@ interface Station : Actor, HasLocation {}
 data class ProcessingOperation(val stationId: Id) : TaskState
 
 class OperationAction(val operation: Operation, var progress: Int, val startedTime: Long) : Action
+class CheckInputAction(val operation: Operation) : Action
+class RequestInputAction(val operation: Operation) : Action
 
-
-@Component
-@Scope(SCOPE_PROTOTYPE)
 class Stove(
-//    val name: String, TODO name 还是要有的。
-    @param:Autowired(required = false) override val id: Id = v7(),
-    val orchestrateService: OrchestrateService
+    val name: String,
+    override val id: Id = v7(),
+    val orchestrateService: OrchestrateService,
+    val objectService: ObjectService,
+    val logisticService: LogisticService
 ) : Station {
     val logger = LoggerFactory.getLogger(this::class.java)!!
     override var location: Location = Location.XY(0, 0)
     var operationTask: OperationTask? = null
 
-    @PostConstruct
     fun init() {
         queue.add(CheckTaskAction)
     }
 
 
-    fun OperationTask.toActions(station: Station): List<Action> {
+    fun OperationTask.toActions(): List<Action> {
         return listOf(
-            OperationAction(operation, 0, System.currentTimeMillis()), TaskStateUpdate(this.id)
+            RequestInputAction(operation),
+            CheckInputAction(operation),
+        )
+    }
+
+    fun Operation.toActions(inputs: List<Object>): List<Action> {
+        return listOf(
+            OperationAction(this, 0, System.currentTimeMillis()),
+            TaskStateUpdate(this.id)
         )
     }
 
@@ -55,6 +57,36 @@ class Stove(
     override val actCapabilities: List<ActCapability> = listOf(object : ActCapability() {
         override fun act(action: Action): Either<ResponseChainResult.NotMe, ActionResult> {
             return when (action) {
+                is RequestInputAction -> {
+                    require(operationTask != null)
+                    operationTask!!.operation.consume.group().forEach { (productId, quantity) ->
+                        logisticService.logisticTransformRequest(productId, quantity, this@Stove).also {
+                            logger.info("提交物流请求 - $it")
+                        }
+                    }
+                    ActionResult(ActionEffect.Consume).right()
+                }
+
+                is CheckInputAction -> {
+                    if (operationTask == null) return ActionResult(ActionEffect.Consume).right()
+                    val existed = objectService.getByOwner(this@Stove.id)
+                    val checkInput = operationTask!!.operation.checkInput(existed)
+                    when (checkInput) {
+                        is Either.Left -> ActionResult(ActionEffect.MoveToEnd(action)).right().also {
+                            logger.info("check input not satisfied - ${checkInput.left()}")
+                        }
+
+                        is Either.Right -> ActionResult(
+                            ActionEffect.ListenLoop(
+                                operationTask!!.operation.toActions(checkInput.value),
+                                action
+                            )
+                        ).right().also {
+                            logger.info("check input done.")
+                        }
+                    }
+                }
+
                 is OperationAction -> {
                     val startedTime = action.startedTime
                     val operation = action.operation
@@ -62,6 +94,8 @@ class Stove(
                     val progress = (time.toDouble() / operation.time.toLong(DurationUnit.MILLISECONDS)) * 100
                     if (progress >= 100) {
                         logger.info("任务完成 - ${action.operation}")
+                        val product = operation.product
+                        objectService.input(product.id, 1)
                         ActionResult(ActionEffect.Consume).right()
                     } else {
                         logger.info("任务进行中 - ${action.operation}, progress = $progress")
@@ -96,7 +130,7 @@ class Stove(
                         if (task != null) {
                             this@Stove.operationTask = task
                             logger.info("接受任务 - $task")
-                            ActionResult(ActionEffect.ListenLoop(task.toActions(this@Stove), action))
+                            ActionResult(ActionEffect.ListenLoop(task.toActions(), action))
                         } else ActionResult(ActionEffect.MoveToEnd(action))
                     }).right()
                 }

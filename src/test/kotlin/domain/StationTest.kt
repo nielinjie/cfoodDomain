@@ -1,11 +1,14 @@
 package xyz.nietongxue.cfood.domain
 
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.getBean
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.context.ApplicationContext
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
 import org.springframework.test.context.TestConstructor
 import org.springframework.test.context.TestConstructor.AutowireMode
+import xyz.nietongxue.cfood.domain.path.GameMap
+import xyz.nietongxue.cfood.domain.path.LocalMap
 import xyz.nietongxue.common.base.v7
 import java.time.LocalDateTime
 
@@ -19,11 +22,21 @@ class StationTest(
     bomService: BOMService,
     val orchestrateService: OrchestrateService,
     val logisticService: LogisticService,
-    val applicationContext: ApplicationContext
+    val objectService: ObjectService
 ) : BaseProducts(
     productService, routingService, bomService
 ) {
 
+    @Autowired
+    lateinit var world: World
+
+    @TestConfiguration
+    class Configure() {
+        @Bean
+        fun localMap(): GameMap {
+            return LocalMap(10, 10)
+        }
+    }
 
     @Test
     fun dispatch() {
@@ -38,9 +51,10 @@ class StationTest(
         )
         orderService.accept(order)
         val stove = Stove(
-//            name = "main",
-            id = v7(),
-            orchestrateService
+            name = "main",
+            orchestrateService = orchestrateService,
+            logisticService = logisticService,
+            objectService = objectService,
         )
         val operation = orchestrateService.execution!!.dispatch(stove)!!
         println(operation)
@@ -63,9 +77,10 @@ class StationTest(
         )
         orderService.accept(order)
         val stove = Stove(
-//            name = "main",
-            id = v7(),
-            orchestrateService
+            name = "main",
+            orchestrateService = orchestrateService,
+            logisticService = logisticService,
+            objectService = objectService,
         )
         val operation = orchestrateService.execution!!.dispatch(stove)!!
         val consume = operation.consume.groupBy { it.product.id }.map {
@@ -82,7 +97,7 @@ class StationTest(
     }
 
     @Test
-    fun tasks(){
+    fun tasks() {
         setupProducts()
         val order = Order(
             code = "TOMATO_EGG_ORDER",
@@ -93,11 +108,8 @@ class StationTest(
             status = OrderState.Waiting
         )
         orderService.accept(order)
-        val station = applicationContext.getBean<Stove>().also {
-            it.location = Location.XY(5, 5)
-        }
-        for (i in 1..30) {
-            station.tick()
+        for (i in 1..20) {
+            world.tick()
             Thread.sleep(100)
         }
     }

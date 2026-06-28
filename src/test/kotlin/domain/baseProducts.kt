@@ -1,6 +1,9 @@
 package xyz.nietongxue.cfood.domain
 
-import kotlin.time.Duration.Companion.minutes
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
+import xyz.nietongxue.cfood.domain.path.GameMap
+import xyz.nietongxue.cfood.domain.path.LocalMap
 import kotlin.time.Duration.Companion.seconds
 
 abstract class BaseProducts(
@@ -8,6 +11,9 @@ abstract class BaseProducts(
     val routingService: RoutingService,
     val bomService: BOMService
 ) {
+
+
+
     val egg = Product(name = "鸡蛋", code = "EGG", type = ProductType.RAW)
 
     //番茄

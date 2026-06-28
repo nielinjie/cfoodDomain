@@ -11,17 +11,13 @@ import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7
 
 
-@Component
-@Scope(SCOPE_PROTOTYPE)
 class Carrier(
     val objectService: ObjectService,
     val logisticService: LogisticService,
-    @param:Autowired(required = false)
     override val id: Id = v7(),
     val localMap: GameMap,
 ) : Actor, Movable, Carriable, LogisticTaskHandle {
 
-    @PostConstruct
     fun init() {
         queue.add(CheckTaskAction)
     }

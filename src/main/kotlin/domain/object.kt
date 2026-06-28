@@ -42,6 +42,10 @@ class ObjectService(
         return objects.filter { it.productId == productId }
     }
 
+    fun getByOwner(owner: Id): List<Object> {
+        return objects.filter { states[it.id] == ObjectState.Locked(owner) }
+    }
+
     fun getOneFree(productId: Id): Object? {
         return objects.find { it.productId == productId && states[it.id] == ObjectState.Free }
     }
