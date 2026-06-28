@@ -65,10 +65,6 @@ class LogisticService(
     }
 }
 
-data class TaskStateUpdate(val taskId: String) : Action
-
-
-data object CheckTaskAction : Action
 
 interface LogisticTaskHandle : Movable {
     var task: LogisticTask?

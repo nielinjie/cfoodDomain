@@ -1,11 +1,5 @@
 package xyz.nietongxue.cfood.domain
 
-import jakarta.annotation.PostConstruct
-import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE
-import org.springframework.context.annotation.Scope
-import org.springframework.stereotype.Component
 import xyz.nietongxue.cfood.domain.path.GameMap
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7
@@ -22,7 +16,6 @@ class Carrier(
         queue.add(CheckTaskAction)
     }
 
-    val logger = LoggerFactory.getLogger(this::class.java)!!
 
     override var location: Location = Location.XY(0, 0)
     override var speed: Int = 1

@@ -32,11 +32,19 @@ class World(
                 orchestrateService = orchestrateService,
                 objectService = objectService,
                 logisticService = logisticService,
+                world = this
             ).also {
                 it.location = Location.XY(5, 5)
                 it.init()
-            }
+            },
         )
+        stations.add(
+            Counter(name = "counter", location = Location.XY(0, 0))
+        )
+    }
+
+    fun getStation(name: String): Station? {
+        return stations.firstOrNull { it.name == name }
     }
 
     fun tick() {

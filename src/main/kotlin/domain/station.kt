@@ -4,7 +4,9 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import org.slf4j.LoggerFactory
+import xyz.nietongxue.common.base.HasName
 import xyz.nietongxue.common.base.Id
+import xyz.nietongxue.common.base.Name
 import xyz.nietongxue.common.base.v7
 import xyz.nietongxue.common.response.ResponseChainResult
 import kotlin.math.log
@@ -13,7 +15,7 @@ import kotlin.time.DurationUnit
 
 class OperationTask(override val id: Id, val operation: Operation) : Task
 
-interface Station : Actor, HasLocation {}
+interface Station : Actor, HasLocation, HasName {}
 
 data class ProcessingOperation(val stationId: Id) : TaskState
 
@@ -21,12 +23,25 @@ class OperationAction(val operation: Operation, var progress: Int, val startedTi
 class CheckInputAction(val operation: Operation) : Action
 class RequestInputAction(val operation: Operation) : Action
 
+
+class Counter(
+    override val name: Name,
+    override val id: Id = v7(),
+    override val location: Location,
+) : Station {
+    override val queue: MutableList<Action> = mutableListOf()
+    override val history: MutableList<Action> = mutableListOf()
+    override val actCapabilities: List<ActCapability> = emptyList()
+
+}
+
 class Stove(
-    val name: String,
+    override val name: String,
     override val id: Id = v7(),
     val orchestrateService: OrchestrateService,
     val objectService: ObjectService,
-    val logisticService: LogisticService
+    val logisticService: LogisticService,
+    val world: World
 ) : Station {
     val logger = LoggerFactory.getLogger(this::class.java)!!
     override var location: Location = Location.XY(0, 0)
@@ -76,13 +91,18 @@ class Stove(
                             logger.info("check input not satisfied - ${checkInput.left()}")
                         }
 
-                        is Either.Right -> ActionResult(
-                            ActionEffect.ListenLoop(
-                                operationTask!!.operation.toActions(checkInput.value),
-                                action
-                            )
-                        ).right().also {
-                            logger.info("check input done.")
+                        is Either.Right -> {
+                            checkInput.value.forEach {
+                                objectService.consume(it.id, this@Stove.id)
+                            }
+                            ActionResult(
+                                ActionEffect.ListenLoop(
+                                    operationTask!!.operation.toActions(checkInput.value),
+                                    action
+                                )
+                            ).right().also {
+                                logger.info("check input done.")
+                            }
                         }
                     }
                 }
@@ -96,6 +116,7 @@ class Stove(
                         logger.info("任务完成 - ${action.operation}")
                         val product = operation.product
                         objectService.product(product.id, 1, this@Stove.location)
+                        logisticService.logisticTransformRequest(product.id, 1, world.getStation("counter")!!)
                         ActionResult(ActionEffect.Consume).right()
                     } else {
                         logger.info("任务进行中 - ${action.operation}, progress = $progress")
@@ -113,8 +134,7 @@ class Stove(
     }, object : ActCapability() {
         val actor = this@Stove
         override fun act(action: Action): Either<ResponseChainResult.NotMe, ActionResult> {
-
-            return if (actor is Station) when (action) {
+            return when (action) {
                 is TaskStateUpdate -> {
                     require(actor.operationTask != null)
                     logger.info("任务执行完成 - ${action.taskId}")
@@ -136,7 +156,7 @@ class Stove(
                 }
 
                 else -> Either.Left(ResponseChainResult.NotMe)
-            } else Either.Left(ResponseChainResult.NotMe)
+            }
         }
     })
 

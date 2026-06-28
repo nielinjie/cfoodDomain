@@ -40,6 +40,13 @@ class ObjectService(
         input(productId, quantity, location) //实际上是一样的，语义不同。
     }
 
+
+    fun consume(objId:Id,ownerId:Id){
+        require(states[objId] == ObjectState.Locked(ownerId))
+        states.remove(objId)
+        locations.remove(objId)
+        objects.removeIf { it.id == objId }
+    }
     fun get(id: Id): Object? = objects.find { it.id == id }
 
     fun getByProductId(productId: Id): List<Object> {
@@ -72,23 +79,15 @@ class ObjectService(
     }
 
     fun release(objectId: Id, owner: Id) {
-        val obj = objects.find { it.id == objectId }
-        if (obj == null) {
-            error("object not found")
-        }
-        if (states[objectId] != ObjectState.Locked(owner)) {
-            error("object is not locked by this owner")
+        require(states[objectId] == ObjectState.Locked(owner)){
+            "object is not locked by this owner"
         }
         states[objectId] = ObjectState.Free
     }
 
     fun transfer(objectId: Id, to: Id, owner: Id) {
-        val obj = objects.find { it.id == objectId }
-        if (obj == null) {
-            error("object not found")
-        }
-        if (states[objectId] != ObjectState.Locked(owner)) {
-            error("object is not locked by this owner")
+        require(states[objectId] == ObjectState.Locked(owner)){
+            "object is not locked by this owner"
         }
         states[objectId] = ObjectState.Locked(to)
     }

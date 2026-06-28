@@ -47,11 +47,13 @@ class WorldTest(
         orderService.accept(order)
         objectService.input(this.tomato.id, 10, Location.XY(3,5))
         objectService.input(this.egg.id, 10, Location.XY(5,7))
-        for (i in 1..50) {
+        for (i in 1..60) {
             world.tick()
             Thread.sleep(100)
         }
-        objectService.objects.forEach { println(it) }
+        objectService.objects.count().also {
+            println("objects count - $it")
+        }
     }
 
     @Test

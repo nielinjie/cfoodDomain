@@ -13,3 +13,9 @@ interface TaskState {
     object Waiting : TaskState
     object Finished : TaskState
 }
+
+
+data class TaskStateUpdate(val taskId: String) : Action
+
+
+data object CheckTaskAction : Action

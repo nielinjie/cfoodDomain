@@ -55,6 +55,7 @@ class StationTest(
             orchestrateService = orchestrateService,
             logisticService = logisticService,
             objectService = objectService,
+            world = world
         )
         val operation = orchestrateService.execution!!.dispatch(stove)!!
         println(operation)
@@ -81,6 +82,7 @@ class StationTest(
             orchestrateService = orchestrateService,
             logisticService = logisticService,
             objectService = objectService,
+            world = world
         )
         val operation = orchestrateService.execution!!.dispatch(stove)!!
         val consume = operation.consume.groupBy { it.product.id }.map {
@@ -108,7 +110,7 @@ class StationTest(
             status = OrderState.Waiting
         )
         orderService.accept(order)
-        for (i in 1..20) {
+        for (i in 1..30) {
             world.tick()
             Thread.sleep(100)
         }
