@@ -9,6 +9,7 @@ class World(
     val logisticService: LogisticService,
     val objectService: ObjectService,
     val orchestrateService: OrchestrateService,
+    val orderService: OrderService,
     val localMap: GameMap,
 ) {
 
@@ -39,7 +40,14 @@ class World(
             },
         )
         stations.add(
-            Counter(name = "counter", location = Location.XY(0, 0))
+            Counter(
+                name = "counter",
+                location = Location.XY(0, 0),
+                objectService = objectService,
+                orderService = orderService
+            ).also {
+                it.init()
+            }
         )
     }
 

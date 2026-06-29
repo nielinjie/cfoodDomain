@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory
 import xyz.nietongxue.common.base.HasName
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.Name
+import xyz.nietongxue.common.base.stuff
 import xyz.nietongxue.common.base.v7
 import xyz.nietongxue.common.response.ResponseChainResult
 import kotlin.math.log
@@ -20,19 +21,48 @@ interface Station : Actor, HasLocation, HasName {}
 data class ProcessingOperation(val stationId: Id) : TaskState
 
 class OperationAction(val operation: Operation, var progress: Int, val startedTime: Long) : Action
-class CheckInputAction(val operation: Operation) : Action
-class RequestInputAction(val operation: Operation) : Action
+class CheckInputAction() : Action
+class RequestInputAction() : Action
 
 
 class Counter(
     override val name: Name,
     override val id: Id = v7(),
     override val location: Location,
+    val objectService: ObjectService,
+    val orderService: OrderService,
 ) : Station {
+    val logger = LoggerFactory.getLogger(this::class.java)!!
     override val queue: MutableList<Action> = mutableListOf()
     override val history: MutableList<Action> = mutableListOf()
-    override val actCapabilities: List<ActCapability> = emptyList()
+    override val actCapabilities: List<ActCapability> = listOf(
+        object : ActCapability() {
+            override fun act(action: Action): Either<ResponseChainResult.NotMe, ActionResult> {
+                return when (action) {
+                    is CheckInputAction -> {
+                        val objects = objectService.getByOwner(id)
+                        val grouped = objects.groupBy { it.labels.get("orderId") }
+                        grouped.forEach { (orderId, objects) ->
+                            val order = orderService.orders.find { it.id == orderId }!!
+                            if (order.satisfy(objectService, objects)) {
+                                logger.info("订单完成 - $order")
+                                orderService.finish(order)
+                                logger.info("Object输出 - ${objects.map { it.id }}")
+                                objectService.output(objects)
+                            }
+                        }
+                        ActionResult(ActionEffect.MoveToEnd(action)).right()
+                    }
 
+                    else -> ResponseChainResult.NotMe.left()
+                }
+            }
+        }
+    )
+
+    fun init() {
+        queue.add(CheckInputAction())
+    }
 }
 
 class Stove(
@@ -54,8 +84,8 @@ class Stove(
 
     fun OperationTask.toActions(): List<Action> {
         return listOf(
-            RequestInputAction(operation),
-            CheckInputAction(operation),
+            RequestInputAction(),
+            CheckInputAction(),
         )
     }
 
@@ -115,7 +145,7 @@ class Stove(
                     if (progress >= 100) {
                         logger.info("任务完成 - ${action.operation}")
                         val product = operation.product
-                        objectService.product(product.id, 1, this@Stove.location)
+                        objectService.product(product.id, 1, this@Stove.location, stuff("orderId" to operation.orderId))
                         logisticService.logisticTransformRequest(product.id, 1, world.getStation("counter")!!)
                         ActionResult(ActionEffect.Consume).right()
                     } else {

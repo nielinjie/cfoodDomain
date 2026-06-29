@@ -42,11 +42,11 @@ class WorldTest(
                 OrderLine(productId = tomatoEgg.id, quantity = 1)
             ),
             requiredTime = LocalDateTime.now().plusHours(12),
-            status = OrderState.Waiting
+            state = OrderState.Waiting
         )
         orderService.accept(order)
-        objectService.input(this.tomato.id, 10, Location.XY(3,5))
-        objectService.input(this.egg.id, 10, Location.XY(5,7))
+        objectService.input(this.tomato.id, 10, Location.XY(3, 5))
+        objectService.input(this.egg.id, 10, Location.XY(5, 7))
         for (i in 1..60) {
             world.tick()
             Thread.sleep(100)
@@ -61,7 +61,7 @@ class WorldTest(
 
         objectService.input(this.egg.id, 10, location = Location.XY(2, 4))
         logisticService.logisticRequest(this.egg.id, 1, Location.XY(6, 1))
-        for (i in 1..30) {
+        for (i in 1..50) {
             world.tick()
             Thread.sleep(100)
         }

@@ -30,7 +30,7 @@ class OperationTest(
                 OrderLine(productId = tomatoEgg.id, quantity = 1)
             ),
             requiredTime = LocalDateTime.now().plusHours(12),
-            status = OrderState.Waiting
+            state = OrderState.Waiting
         )
         orderService.accept(order)
         val plan = orchestrateService.plan

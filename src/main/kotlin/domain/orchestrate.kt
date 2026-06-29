@@ -37,6 +37,7 @@ class OrchestrateService(
                             consume = consume.map { component ->
                                 Consume(productService.getById(component.componentId)!!, component.quantity)
                             },
+                            orderId = order.id
                         )
                     )
                 }

@@ -47,7 +47,7 @@ class StationTest(
                 OrderLine(productId = tomatoEgg.id, quantity = 1)
             ),
             requiredTime = LocalDateTime.now().plusHours(12),
-            status = OrderState.Waiting
+            state = OrderState.Waiting
         )
         orderService.accept(order)
         val stove = Stove(
@@ -74,7 +74,7 @@ class StationTest(
                 OrderLine(productId = tomatoEgg.id, quantity = 1)
             ),
             requiredTime = LocalDateTime.now().plusHours(12),
-            status = OrderState.Waiting
+            state = OrderState.Waiting
         )
         orderService.accept(order)
         val stove = Stove(
@@ -107,7 +107,7 @@ class StationTest(
                 OrderLine(productId = tomatoEgg.id, quantity = 1)
             ),
             requiredTime = LocalDateTime.now().plusHours(12),
-            status = OrderState.Waiting
+            state = OrderState.Waiting
         )
         orderService.accept(order)
         for (i in 1..30) {

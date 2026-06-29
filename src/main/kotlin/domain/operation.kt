@@ -16,7 +16,8 @@ data class Operation(
     val name: String,
     val time: Duration,
     val product: Product,
-    val consume: List<Consume>
+    val consume: List<Consume>,
+    val orderId: Id
 ) : HasId {
     /**
      * 检查输入,

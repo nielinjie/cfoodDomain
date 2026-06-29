@@ -12,14 +12,22 @@ class Order(
     val code: String,
     val lines: List<OrderLine>,
     val requiredTime: LocalDateTime,
-    val status: OrderState
-) : HasId
+    var state: OrderState
+) : HasId {
+    fun satisfy(objectService: ObjectService, objects: List<Object>): Boolean {
+        return lines.all { it.satisfy(objectService, objects) }
+    }
+}
 
 class OrderLine(
     override val id: Id = v7(),
     val productId: Id,
     val quantity: Int
-) : HasId
+) : HasId {
+    fun satisfy(objectService: ObjectService, objects: List<Object>): Boolean {
+        return objects.count { it.productId == productId } == quantity
+    }
+}
 
 interface OrderState {
     object Waiting : OrderState
@@ -38,7 +46,7 @@ class OrderService(
 
 
     fun getWaiting(): List<Order> {
-        return orders.filter { it.status == OrderState.Waiting }
+        return orders.filter { it.state == OrderState.Waiting }
     }
 
     fun accept(order: Order) {
@@ -51,6 +59,9 @@ class OrderService(
         applicationContext.publishEvent(OrderEvent(order))
     }
 
+    fun finish(order: Order) {
+        order.state = OrderState.Finished
+    }
 
 }
 

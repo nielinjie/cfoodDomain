@@ -11,6 +11,7 @@ import org.springframework.test.context.TestConstructor
 import org.springframework.test.context.TestConstructor.AutowireMode
 import xyz.nietongxue.cfood.domain.path.GameMap
 import xyz.nietongxue.cfood.domain.path.LocalMap
+import xyz.nietongxue.common.base.stuff
 
 
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
@@ -41,7 +42,7 @@ class LogisticTest(
     @Test
     fun autoGetTask() {
         val carrier = applicationContext.getBean<Carrier>()
-        objectService.input(this.egg.id, 10, location = Location.XY(2, 4))
+        objectService.input(this.egg.id, 10, location = Location.XY(2, 4), stuff())
         logisticService.logisticRequest(this.egg.id, 1, Location.XY(6, 1))
         for (i in 1..30) {
             carrier.tick()
@@ -55,7 +56,7 @@ class LogisticTest(
         val station = applicationContext.getBean<Stove>().also {
             it.location = Location.XY(5, 5)
         }
-        objectService.input(this.egg.id, 10, location = Location.XY(2, 4))
+        objectService.input(this.egg.id, 10, location = Location.XY(2, 4),stuff())
         logisticService.logisticTransformRequest(this.egg.id, 1, station)
         for (i in 1..30) {
             carrier.tick()
@@ -70,7 +71,7 @@ class LogisticTest(
     @Test
     fun autoGetTask2() {
         val carrier = applicationContext.getBean<Carrier>()
-        objectService.input(this.egg.id, 10, location = Location.XY(2, 4))
+        objectService.input(this.egg.id, 10, location = Location.XY(2, 4),stuff())
         logisticService.logisticRequest(this.egg.id, 1, Location.XY(6, 1))
         for (i in 1..60) {
             carrier.tick()
@@ -88,7 +89,7 @@ class LogisticTest(
     fun autoGetTask22() {
         //TODO 有个现象：carrier 把刚放下的东西拿走了。这个属于机制决定的正常现象。需要如果要避免，就不能是简单放下，而是一个转交。
         val carrier = applicationContext.getBean<Carrier>()
-        objectService.input(this.egg.id, 10, location = Location.XY(2, 4))
+        objectService.input(this.egg.id, 10, location = Location.XY(2, 4),stuff())
         logisticService.logisticRequest(this.egg.id, 1, Location.XY(6, 1))
         for (i in 1..60) {
             carrier.tick()
