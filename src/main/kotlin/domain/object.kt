@@ -1,12 +1,6 @@
 package xyz.nietongxue.cfood.domain
 
-import org.springframework.stereotype.Service
-import xyz.nietongxue.common.base.HasId
-import xyz.nietongxue.common.base.Id
-import xyz.nietongxue.common.base.Labels
-import xyz.nietongxue.common.base.Stuff
-import xyz.nietongxue.common.base.stuff
-import xyz.nietongxue.common.base.v7
+import xyz.nietongxue.common.base.*
 
 /**
  * 可以占有 obj 的东西。比如设备、车辆。
@@ -29,7 +23,6 @@ class Object(override val id: Id, val productId: Id, val labels: MutableMap<Stri
     }
 }
 
-@Service
 class ObjectService(
     val productService: ProductService
 ) {

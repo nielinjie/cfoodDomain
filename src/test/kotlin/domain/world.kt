@@ -5,13 +5,14 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.test.context.TestConstructor
 import org.springframework.test.context.TestConstructor.AutowireMode
+import xyz.nietongxue.cfood.Main
 import xyz.nietongxue.cfood.domain.path.GameMap
 import xyz.nietongxue.cfood.domain.path.LocalMap
 import java.time.LocalDateTime
 import kotlin.test.Test
 
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
-@SpringBootTest
+@SpringBootTest(classes = [Main::class])
 @TestConstructor(autowireMode = AutowireMode.ALL)
 class WorldTest(
     val world: World,

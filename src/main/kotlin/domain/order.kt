@@ -1,7 +1,5 @@
 package xyz.nietongxue.cfood.domain
 
-import org.springframework.context.ApplicationContext
-import org.springframework.stereotype.Service
 import xyz.nietongxue.common.base.HasId
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7
@@ -35,14 +33,19 @@ interface OrderState {
     object Finished : OrderState
 }
 
-@Service
+
+interface OrderListener {
+    fun orderChangeEvent(order: Order)
+}
+
 class OrderService(
     val productService: ProductService,
     val routingService: RoutingService,
     val bomService: BOMService,
-    val applicationContext: ApplicationContext
 ) {
     val orders = mutableListOf<Order>()
+
+    var listener: OrderListener? = null
 
 
     fun getWaiting(): List<Order> {
@@ -56,7 +59,7 @@ class OrderService(
 
 
     fun orderEvent(order: Order) {
-        applicationContext.publishEvent(OrderEvent(order))
+        listener?.orderChangeEvent(order)
     }
 
     fun finish(order: Order) {

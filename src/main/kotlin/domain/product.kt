@@ -1,6 +1,5 @@
 package xyz.nietongxue.cfood.domain
 
-import org.springframework.stereotype.Service
 import xyz.nietongxue.common.base.HasId
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.Name
@@ -21,7 +20,6 @@ enum class ProductType { //成品、半成品、原料
 }
 
 
-@Service
 class ProductService {
     val products = mutableListOf<Product>()
     fun getById(id: Id): Product? {

@@ -1,7 +1,5 @@
 package xyz.nietongxue.cfood.domain
 
-import org.springframework.context.event.EventListener
-import org.springframework.stereotype.Service
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7
 import kotlin.collections.set

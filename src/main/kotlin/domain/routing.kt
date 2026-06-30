@@ -1,6 +1,5 @@
 package xyz.nietongxue.cfood.domain
 
-import org.springframework.stereotype.Service
 import xyz.nietongxue.common.base.HasId
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7
@@ -32,7 +31,6 @@ data class RoutingOperation(
 ) : HasId
 
 
-@Service
 class RoutingService {
     val routingList = mutableListOf<Routing>()
     fun save(routing: Routing) {

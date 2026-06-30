@@ -3,9 +3,7 @@ package xyz.nietongxue.cfood.domain
 import arrow.core.Either
 import arrow.core.right
 import org.slf4j.LoggerFactory.getLogger
-import org.springframework.stereotype.Service
 import xyz.nietongxue.cfood.domain.path.GameMap
-import xyz.nietongxue.common.base.HasId
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7
 import xyz.nietongxue.common.response.ResponseChainResult
@@ -25,7 +23,6 @@ data class LogisticTransformTask(
 data class ProcessingLogistic(val carryId: Id, val objectIds: List<Id>) : TaskState
 
 
-@Service
 class LogisticService(
 ) : TaskManager {
 
