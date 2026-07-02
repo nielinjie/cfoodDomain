@@ -4,8 +4,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import xyz.nietongxue.cfood.domain.*
 import xyz.nietongxue.cfood.domain.path.LocalMap
 import xyz.nietongxue.common.json.defaultOM
-import java.time.Duration
-import kotlin.collections.map
 
 class Facade() {
     val productService = ProductService()
@@ -45,7 +43,7 @@ class Facade() {
     val thread = Thread {
         while (true) {
             world.tick()
-            Thread.sleep(100)
+            runCatching {  Thread.sleep(100)}
         }
     }
 
@@ -81,5 +79,9 @@ class Facade() {
     fun setupMap(json: String) {
         val world = defaultOM.readValue<WorldDeclare>(json)
         this.world.setupFromDeclare(world)
+    }
+
+    fun stop() {
+        this.thread.interrupt()
     }
 }

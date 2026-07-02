@@ -44,7 +44,7 @@ class StationTest(
         val order = Order(
             code = "TOMATO_EGG_ORDER",
             lines = listOf(
-                OrderLine(productId = tomatoEgg.id, quantity = 1)
+                OrderLine(productCode = "TOMATO_EGG", quantity = 1)
             ),
             requiredTime = LocalDateTime.now().plusHours(12),
             state = OrderState.Waiting
@@ -71,7 +71,7 @@ class StationTest(
         val order = Order(
             code = "TOMATO_EGG_ORDER",
             lines = listOf(
-                OrderLine(productId = tomatoEgg.id, quantity = 1)
+                OrderLine(productCode = "TOMATO_EGG", quantity = 1)
             ),
             requiredTime = LocalDateTime.now().plusHours(12),
             state = OrderState.Waiting
@@ -104,12 +104,13 @@ class StationTest(
         val order = Order(
             code = "TOMATO_EGG_ORDER",
             lines = listOf(
-                OrderLine(productId = tomatoEgg.id, quantity = 1)
+                OrderLine(productCode = "TOMATO_EGG", quantity = 1)
             ),
             requiredTime = LocalDateTime.now().plusHours(12),
             state = OrderState.Waiting
         )
         orderService.accept(order)
+
         for (i in 1..30) {
             world.tick()
             Thread.sleep(100)

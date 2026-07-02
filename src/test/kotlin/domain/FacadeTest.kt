@@ -139,6 +139,7 @@ class FacadeTest {
         facade.start()
 
         Thread.sleep(10000)
+        facade.stop()
     }
 
 }

@@ -40,7 +40,7 @@ class WorldTest(
         val order = Order(
             code = "TOMATO_EGG_ORDER",
             lines = listOf(
-                OrderLine(productId = tomatoEgg.id, quantity = 1)
+                OrderLine(productCode = tomatoEgg.id, quantity = 1)
             ),
             requiredTime = LocalDateTime.now().plusHours(12),
             state = OrderState.Waiting
