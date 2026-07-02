@@ -33,4 +33,8 @@ class ProductService {
         products.add(product)
     }
 
+    fun getByCode(productCode: String) : Product?{
+        return products.find { it.code == productCode }
+    }
+
 }

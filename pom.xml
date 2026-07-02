@@ -96,6 +96,11 @@
             <artifactId>common2.core</artifactId>
             <version>${common2.version}</version>
         </dependency>
+        <dependency>
+            <groupId>xyz.nietongxue</groupId>
+            <artifactId>common2.json</artifactId>
+            <version>${common2.version}</version>
+        </dependency>
 <!--        <dependency>-->
 <!--            <groupId>xyz.nietongxue</groupId>-->
 <!--            <artifactId>common2.spring</artifactId>-->

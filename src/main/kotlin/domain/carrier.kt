@@ -1,5 +1,6 @@
 package xyz.nietongxue.cfood.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import xyz.nietongxue.cfood.domain.path.GameMap
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7

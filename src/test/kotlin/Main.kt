@@ -97,7 +97,7 @@ class Config {
             orderService = orderService,
             localMap = localMap,
         ).also {
-            it.init()
+//            it.init()
         }
     }
 

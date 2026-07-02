@@ -3,7 +3,7 @@ package xyz.nietongxue.cfood.domain
 import xyz.nietongxue.common.base.HasId
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7
-import kotlin.time.Duration
+import java.time.Duration
 
 data class Routing(
     override val id: Id = v7(),

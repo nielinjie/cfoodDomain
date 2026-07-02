@@ -4,7 +4,7 @@ import arrow.core.Either
 import xyz.nietongxue.common.base.HasId
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7
-import kotlin.time.Duration
+import java.time.Duration
 
 /**
  * 执行步骤，相对于工艺步骤。

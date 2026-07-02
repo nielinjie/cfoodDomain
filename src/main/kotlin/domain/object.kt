@@ -31,6 +31,11 @@ class ObjectService(
     val states = mutableMapOf<Id, ObjectState>()
     val locations = mutableMapOf<Id, Location>()
 
+    fun inputByCode(productCode: String, quantity: Int = 1, location: Location, labels: Stuff = stuff()) {
+        val product = productService.getByCode(productCode)!!
+        input(productId = product.id, quantity = quantity, location = location, labels = labels)
+    }
+
     fun input(productId: Id, quantity: Int = 1, location: Location, labels: Stuff = stuff()) {
         for (i in 1..quantity) {
             val obj = Object(id = v7(), productId = productId, labels = labels.toMutableMap())

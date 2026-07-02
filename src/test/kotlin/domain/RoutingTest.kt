@@ -3,6 +3,7 @@ package xyz.nietongxue.cfood.domain
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestConstructor
 import org.springframework.test.context.TestConstructor.AutowireMode
+import java.time.Duration
 import kotlin.test.Test
 import kotlin.time.Duration.Companion.minutes
 
@@ -24,7 +25,7 @@ class RoutingTest(
     val tomatoEggOperation = RoutingOperation(
         code = "TOMATO_EGG_OP",
         name = "番茄鸡蛋",
-        time = 2.minutes,
+        time = Duration.ofMinutes(2),
         productId = tomatoEgg.id, actionDescription = ""
     )
     val tomatoEggRouting = Routing(

@@ -31,6 +31,7 @@ class Counter(
     override val location: Location,
     val objectService: ObjectService,
     val orderService: OrderService,
+    val productService: ProductService
 ) : Station {
     val logger = LoggerFactory.getLogger(this::class.java)!!
     override val queue: MutableList<Action> = mutableListOf()
@@ -44,7 +45,7 @@ class Counter(
                         val grouped = objects.groupBy { it.labels.get("orderId") }
                         grouped.forEach { (orderId, objects) ->
                             val order = orderService.orders.find { it.id == orderId }!!
-                            if (order.satisfy(objectService, objects)) {
+                            if (order.satisfy(objectService, productService ,objects)) {
                                 logger.info("订单完成 - $order")
                                 orderService.finish(order)
                                 logger.info("Object输出 - ${objects.map { it.id }}")
@@ -141,7 +142,7 @@ class Stove(
                     val startedTime = action.startedTime
                     val operation = action.operation
                     val time = System.currentTimeMillis() - startedTime
-                    val progress = (time.toDouble() / operation.time.toLong(DurationUnit.MILLISECONDS)) * 100
+                    val progress = (time.toDouble() / operation.time.toMillis()) * 100
                     if (progress >= 100) {
                         logger.info("任务完成 - ${action.operation}")
                         val product = operation.product

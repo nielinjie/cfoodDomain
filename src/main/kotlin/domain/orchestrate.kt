@@ -19,7 +19,7 @@ class OrchestrateService(
     fun plan(): Plan {
         val order = orderService.getWaiting().firstOrNull() ?: error("no order") //TODO 没有处理遗留任务。
         return order.lines.flatMap {
-            val product = it.productId
+            val product = productService.getByCode(it.productCode)!!.id
             val routing = routingService.getByProductId(product)!!
             val bom = bomService.getByProductId(product)
             val consume = bomService.getComponents(product)

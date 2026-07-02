@@ -1,0 +1,53 @@
+{
+  "products" : [ {
+    "id" : "019f1b4b-fd4e-75a1-810e-762c42ed5a5c",
+    "name" : "鸡蛋",
+    "code" : "EGG",
+    "type" : "RAW",
+    "unit" : ""
+  }, {
+    "id" : "019f1b4b-fd4e-73ea-97fd-6284f5cf49a9",
+    "name" : "番茄",
+    "code" : "TOMATO",
+    "type" : "RAW",
+    "unit" : ""
+  }, {
+    "id" : "019f1b4b-fd4e-791d-a5e7-dbfd114ad03d",
+    "name" : "番茄鸡蛋",
+    "code" : "TOMATO_EGG",
+    "type" : "FINISHED",
+    "unit" : ""
+  } ],
+  "routings" : [ {
+    "id" : "019f1b4b-fd4f-7cd1-87dd-55d6d7564393",
+    "productId" : "019f1b4b-fd4e-791d-a5e7-dbfd114ad03d",
+    "lines" : [ {
+      "id" : "019f1b4b-fd4f-7b83-b476-420bba42f76f",
+      "operation" : {
+        "id" : "019f1b4b-fd4f-7c37-b3c9-df9fd1ef4e67",
+        "code" : "TOMATO_EGG_OP",
+        "name" : "番茄鸡蛋",
+        "time" : 1,
+        "productId" : "019f1b4b-fd4e-791d-a5e7-dbfd114ad03d",
+        "actionDescription" : ""
+      },
+      "quantity" : 1
+    } ]
+  } ],
+  "boms" : [ {
+    "id" : "019f1b4b-fd4e-7fa2-941b-8ca0032ed2a8",
+    "productId" : "019f1b4b-fd4e-791d-a5e7-dbfd114ad03d",
+    "lines" : [ {
+      "id" : "019f1b4b-fd4e-7c9f-a974-251ab4141703",
+      "componentId" : "019f1b4b-fd4e-73ea-97fd-6284f5cf49a9",
+      "quantity" : 1
+    }, {
+      "id" : "019f1b4b-fd4e-7844-b7b7-3e758a42cde9",
+      "componentId" : "019f1b4b-fd4e-75a1-810e-762c42ed5a5c",
+      "quantity" : 1
+    } ],
+    "version" : {
+      "version" : 0
+    }
+  } ]
+}

@@ -4,13 +4,18 @@ import xyz.nietongxue.common.base.HasId
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7
 
-class BOM(override val id: Id = v7(), val productId: Id, val lines: List<BOMLine>, val version: Version = Version(0)) :
+data class BOM(
+    override val id: Id = v7(),
+    val productId: Id,
+    val lines: List<BOMLine>,
+    val version: Version = Version(0)
+) :
     HasId
 
-class BOMLine(override val id: Id = v7(), val componentId: Id, val quantity: Int) : HasId
+data class BOMLine(override val id: Id = v7(), val componentId: Id, val quantity: Int) : HasId
 
 
-class Version(val version: Int)
+data class Version(val version: Int)
 
 
 class BOMService(

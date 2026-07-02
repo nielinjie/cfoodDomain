@@ -12,19 +12,21 @@ class Order(
     val requiredTime: LocalDateTime,
     var state: OrderState
 ) : HasId {
-    fun satisfy(objectService: ObjectService, objects: List<Object>): Boolean {
-        return lines.all { it.satisfy(objectService, objects) }
+    fun satisfy(objectService: ObjectService, productService: ProductService, objects: List<Object>): Boolean {
+        return lines.all { it.satisfy(objectService, productService = productService, objects) }
     }
 }
 
 class OrderLine(
     override val id: Id = v7(),
-    val productId: Id,
+    val productCode: String,
     val quantity: Int
 ) : HasId {
-    fun satisfy(objectService: ObjectService, objects: List<Object>): Boolean {
+    fun satisfy(objectService: ObjectService, productService: ProductService, objects: List<Object>): Boolean {
+        val productId = productService.getByCode(productCode)?.id ?: return false
         return objects.count { it.productId == productId } == quantity
     }
+
 }
 
 interface OrderState {
