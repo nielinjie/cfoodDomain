@@ -11,6 +11,8 @@ import org.springframework.test.context.TestConstructor
 import org.springframework.test.context.TestConstructor.AutowireMode
 import xyz.nietongxue.cfood.domain.path.GameMap
 import xyz.nietongxue.cfood.domain.path.LocalMap
+import xyz.nietongxue.cfood.domain.staff.Carrier
+import xyz.nietongxue.cfood.domain.station.Stove
 import xyz.nietongxue.common.base.stuff
 
 

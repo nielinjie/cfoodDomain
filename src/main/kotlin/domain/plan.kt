@@ -1,5 +1,6 @@
 package xyz.nietongxue.cfood.domain
 
+import xyz.nietongxue.cfood.domain.station.Station
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7
 import kotlin.collections.set

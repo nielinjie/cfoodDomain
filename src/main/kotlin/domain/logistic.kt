@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.right
 import org.slf4j.LoggerFactory.getLogger
 import xyz.nietongxue.cfood.domain.path.GameMap
+import xyz.nietongxue.cfood.domain.station.Station
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7
 import xyz.nietongxue.common.response.ResponseChainResult

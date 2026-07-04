@@ -1,81 +1,48 @@
-package xyz.nietongxue.cfood.domain
+package xyz.nietongxue.cfood.domain.station
 
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import org.slf4j.LoggerFactory
-import xyz.nietongxue.common.base.HasName
+import xyz.nietongxue.cfood.domain.ActCapability
+import xyz.nietongxue.cfood.domain.Action
+import xyz.nietongxue.cfood.domain.ActionEffect
+import xyz.nietongxue.cfood.domain.ActionResult
+import xyz.nietongxue.cfood.domain.CheckTaskAction
+import xyz.nietongxue.cfood.domain.Location
+import xyz.nietongxue.cfood.domain.LogisticService
+import xyz.nietongxue.cfood.domain.Object
+import xyz.nietongxue.cfood.domain.ObjectService
+import xyz.nietongxue.cfood.domain.Operation
+import xyz.nietongxue.cfood.domain.OrchestrateService
+import xyz.nietongxue.cfood.domain.Port
+import xyz.nietongxue.cfood.domain.Size
+import xyz.nietongxue.cfood.domain.TaskStateUpdate
+import xyz.nietongxue.cfood.domain.World
+import xyz.nietongxue.cfood.domain.group
 import xyz.nietongxue.common.base.Id
-import xyz.nietongxue.common.base.Name
 import xyz.nietongxue.common.base.stuff
 import xyz.nietongxue.common.base.v7
 import xyz.nietongxue.common.response.ResponseChainResult
-import kotlin.math.log
-import kotlin.time.DurationUnit
+import kotlin.collections.component1
+import kotlin.collections.component2
 
-
-class OperationTask(override val id: Id, val operation: Operation) : Task
-
-interface Station : Actor, HasLocation, HasName {}
-
-data class ProcessingOperation(val stationId: Id) : TaskState
-
-class OperationAction(val operation: Operation, var progress: Int, val startedTime: Long) : Action
-class CheckInputAction() : Action
-class RequestInputAction() : Action
-
-
-class Counter(
-    override val name: Name,
-    override val id: Id = v7(),
-    override val location: Location,
-    val objectService: ObjectService,
-    val orderService: OrderService,
-    val productService: ProductService
-) : Station {
-    val logger = LoggerFactory.getLogger(this::class.java)!!
-    override val queue: MutableList<Action> = mutableListOf()
-    override val history: MutableList<Action> = mutableListOf()
-    override val actCapabilities: List<ActCapability> = listOf(
-        object : ActCapability() {
-            override fun act(action: Action): Either<ResponseChainResult.NotMe, ActionResult> {
-                return when (action) {
-                    is CheckInputAction -> {
-                        val objects = objectService.getByOwner(id)
-                        val grouped = objects.groupBy { it.labels.get("orderId") }
-                        grouped.forEach { (orderId, objects) ->
-                            val order = orderService.orders.find { it.id == orderId }!!
-                            if (order.satisfy(objectService, productService ,objects)) {
-                                logger.info("订单完成 - $order")
-                                orderService.finish(order)
-                                logger.info("Object输出 - ${objects.map { it.id }}")
-                                objectService.output(objects)
-                            }
-                        }
-                        ActionResult(ActionEffect.MoveToEnd(action)).right()
-                    }
-
-                    else -> ResponseChainResult.NotMe.left()
-                }
-            }
-        }
-    )
-
-    fun init() {
-        queue.add(CheckInputAction())
-    }
-}
-
+/**
+ * 灶台
+ * 一种加工工作站。负责一种加工。
+ */
 class Stove(
     override val name: String,
     override val id: Id = v7(),
+    override val size: Size,
+    override val ports: List<Port>,
+    override var location: Location,
     val orchestrateService: OrchestrateService,
     val objectService: ObjectService,
     val logisticService: LogisticService,
     val world: World
 ) : Station {
     val logger = LoggerFactory.getLogger(this::class.java)!!
-    override var location: Location = Location.XY(0, 0)
     var operationTask: OperationTask? = null
 
     fun init() {

@@ -9,6 +9,7 @@ import org.springframework.test.context.TestConstructor
 import org.springframework.test.context.TestConstructor.AutowireMode
 import xyz.nietongxue.cfood.domain.path.GameMap
 import xyz.nietongxue.cfood.domain.path.LocalMap
+import xyz.nietongxue.cfood.domain.station.Stove
 import xyz.nietongxue.common.base.v7
 import java.time.LocalDateTime
 
@@ -55,7 +56,10 @@ class StationTest(
             orchestrateService = orchestrateService,
             logisticService = logisticService,
             objectService = objectService,
-            world = world
+            world = world,
+            size = Size(1, 1),
+            ports = listOf(),
+            location = Location.XY(0, 0)
         )
         val operation = orchestrateService.execution!!.dispatch(stove)!!
         println(operation)
@@ -82,7 +86,10 @@ class StationTest(
             orchestrateService = orchestrateService,
             logisticService = logisticService,
             objectService = objectService,
-            world = world
+            world = world,
+            size = Size(1, 1),
+            ports = listOf(),
+            location = Location.XY(0, 0)
         )
         val operation = orchestrateService.execution!!.dispatch(stove)!!
         val consume = operation.consume.groupBy { it.product.id }.map {
@@ -92,10 +99,7 @@ class StationTest(
             logisticService.logisticRequest(it.first, it.second, stove.location)
         }
         val task = logisticService.dispatch(v7())
-        println(task)
-        println(logisticService.tasks)
         logisticService.finish(task!!)
-        println(logisticService.tasks)
     }
 
     @Test

@@ -1,5 +1,7 @@
 package xyz.nietongxue.cfood.domain
 
+import xyz.nietongxue.cfood.domain.station.OperationTask
+import xyz.nietongxue.cfood.domain.station.ProcessingOperation
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7
 

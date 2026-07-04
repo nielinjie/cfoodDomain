@@ -2,6 +2,10 @@ package xyz.nietongxue.cfood.domain
 
 import xyz.nietongxue.cfood.domain.path.GameMap
 import xyz.nietongxue.cfood.domain.path.LocalMap
+import xyz.nietongxue.cfood.domain.staff.Carrier
+import xyz.nietongxue.cfood.domain.station.Counter
+import xyz.nietongxue.cfood.domain.station.Station
+import xyz.nietongxue.cfood.domain.station.Stove
 
 class World(
     val logisticService: LogisticService,
@@ -59,9 +63,11 @@ class World(
                             orchestrateService = orchestrateService,
                             objectService = objectService,
                             logisticService = logisticService,
-                            world = this
+                            world = this,
+                            size = it.size,
+                            ports = it.ports,
+                            location = Location.XY(it.location.x, it.location.y)
                         ).also { s ->
-                            s.location = Location.XY(it.location.x, it.location.y)
                             s.init()
                         }
                     )
@@ -72,6 +78,8 @@ class World(
                         Counter(
                             name = it.name,
                             location = Location.XY(it.location.x, it.location.y),
+                            size = it.size,
+                            ports = it.ports,
                             objectService = objectService,
                             orderService = orderService,
                             productService = objectService.productService
@@ -127,6 +135,8 @@ data class StationDeclare(
     val name: String,
     val type: String,
     val location: LocationDeclare,
+    val size: Size,
+    val ports: List<Port>,
 )
 
 data class CarrierDeclare(

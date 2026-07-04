@@ -62,52 +62,12 @@ class FacadeTest {
     }
 
 
-    @Test
-    fun mapSave() {
-        val facade = Facade()
-        with(facade) {
-            val map = facade.localMap.let {
-                val de = GameMapDeclare(
-                    width = it.width,
-                    height = it.height
-                )
-                de
-            }
-            val stations = facade.world.stations.map {
-                val de = StationDeclare(
-                    name = it.name,
-                    type = when (it) {
-                        is Stove -> "Stove"
-                        is Counter -> "Counter"
-                        else -> error("no such type")
-                    },
-                    location = LocationDeclare(
-                        x = it.location.position().x,
-                        y = it.location.position().y
-                    )
-                )
-                de
-            }
-            val carriers = facade.world.carriers.map {
-                val de = CarrierDeclare(
-                    location = LocationDeclare(
-                        x = it.location.position().x,
-                        y = it.location.position().y
-                    ),
-                )
-                de
-            }
-            WorldDeclare(stations = stations, carriers = carriers, map = map).also {
-                println(it.toJsonString(true))
-            }
-        }
-    }
 
 
     @Test
     fun loadMap() {
         val facade = Facade()
-        val string = (javaClass.getResource("/map.json").readText())
+        val string = (javaClass.getResource("/map.json")!!.readText())
         val world = defaultOM.readValue<WorldDeclare>(string)
         println(world)
         facade.world.setupFromDeclare(world)

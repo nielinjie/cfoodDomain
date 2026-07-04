@@ -8,6 +8,43 @@ import xyz.nietongxue.cfood.domain.path.PathFinder
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.response.ResponseChainResult
 
+enum class Direction {
+    N, S, E, W,
+    NE, NW, SE, SW, None;
+
+    companion object {
+        fun fromString(direction: String): Direction {
+            return when (direction.uppercase()) {
+                "N", "NORTH" -> N
+                "S", "SOUTH" -> S
+                "E", "EAST" -> E
+                "W", "WEST" -> W
+                "NE", "NORTHEAST" -> NE
+                "NW", "NORTHWEST" -> NW
+                "SE", "SOUTHEAST" -> SE
+                "SW", "SOUTHWEST" -> SW
+                "NONE" -> None
+                else -> error("Invalid direction: $direction")
+            }
+        }
+
+        fun fromTwoPositions(start: Position, end: Position): Direction {
+            val dx = end.x - start.x
+            val dy = end.y - start.y
+            return when {
+                dx == 0 && dy == 0 -> None
+                dx > 0 && dy == 0 -> E
+                dx < 0 && dy == 0 -> W
+                dx == 0 && dy > 0 -> N
+                dx == 0 && dy < 0 -> S
+                else -> error("Invalid direction") //TODO 支持斜向的。
+            }
+        }
+    }
+}
+
+
+data class Speed(val direction: Direction, val distance: Int)
 
 class PathPlan(val positions: List<Position>) {
     companion object {
@@ -25,7 +62,8 @@ interface HasLocation {
 
 interface Movable : HasLocation {
     override var location: Location
-    var speed: Int
+    var speed: Speed
+    val maxSpeed: Int
 }
 
 
@@ -41,7 +79,10 @@ class MoveCapability(val actor: Actor, val objectService: ObjectService) : ActCa
                     else {
                         val index = action.plan.positions.indexOf(actor.location.position())
                         require(index >= 0)
-                        val next = action.plan.positions[minOf(index + actor.speed, action.plan.positions.size - 1)]
+                        val next = action.plan.positions[minOf(index + actor.maxSpeed, action.plan.positions.size - 1)]
+                        val speed =
+                            Speed(Direction.Companion.fromTwoPositions(actor.location.position(), next), actor.maxSpeed)
+                        actor.speed = speed
                         actor.location = Location.XY(next.x, next.y)
                         if (actor is Carriable && actor.carrying != null)
                             objectService.setLocation(

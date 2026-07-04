@@ -3,6 +3,7 @@ package xyz.nietongxue.cfood.domain
 import arrow.core.Either
 import arrow.core.right
 import org.slf4j.LoggerFactory
+import xyz.nietongxue.cfood.domain.station.Station
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.response.ResponseChainResult
 
@@ -11,6 +12,7 @@ data class LoadAction(val location: Location, val obj: Id) : Action
 data class UnloadAction(val location: Location) : Action
 
 data class TransformAction(val location: Location, val obj: Id, val accepter: Station) : Action
+
 interface Carriable {
     var carrying: String?
 }
