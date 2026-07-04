@@ -1,6 +1,7 @@
 package xyz.nietongxue.cfood.domain.station
 
 import xyz.nietongxue.cfood.domain.*
+import xyz.nietongxue.cfood.domain.facility.Facility
 import xyz.nietongxue.common.base.Id
 
 

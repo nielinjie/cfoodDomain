@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.test.context.TestConstructor
 import org.springframework.test.context.TestConstructor.AutowireMode
+import xyz.nietongxue.cfood.domain.facility.Size
 import xyz.nietongxue.cfood.domain.path.GameMap
 import xyz.nietongxue.cfood.domain.path.LocalMap
 import xyz.nietongxue.cfood.domain.station.Stove

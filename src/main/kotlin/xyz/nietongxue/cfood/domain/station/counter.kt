@@ -11,9 +11,9 @@ import xyz.nietongxue.cfood.domain.ActionResult
 import xyz.nietongxue.cfood.domain.Location
 import xyz.nietongxue.cfood.domain.ObjectService
 import xyz.nietongxue.cfood.domain.OrderService
-import xyz.nietongxue.cfood.domain.Port
+import xyz.nietongxue.cfood.domain.facility.Port
 import xyz.nietongxue.cfood.domain.ProductService
-import xyz.nietongxue.cfood.domain.Size
+import xyz.nietongxue.cfood.domain.facility.Size
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.Name
 import xyz.nietongxue.common.base.v7

@@ -1,5 +1,7 @@
 package xyz.nietongxue.cfood.domain
 
+import xyz.nietongxue.cfood.domain.facility.Port
+import xyz.nietongxue.cfood.domain.facility.Size
 import xyz.nietongxue.cfood.domain.path.GameMap
 import xyz.nietongxue.cfood.domain.path.LocalMap
 import xyz.nietongxue.cfood.domain.staff.Carrier

@@ -1,5 +1,7 @@
-package xyz.nietongxue.cfood.domain
+package xyz.nietongxue.cfood.domain.facility
 
+import xyz.nietongxue.cfood.domain.HasLocation
+import xyz.nietongxue.cfood.domain.Position
 import xyz.nietongxue.common.base.HasId
 import xyz.nietongxue.common.base.HasName
 
