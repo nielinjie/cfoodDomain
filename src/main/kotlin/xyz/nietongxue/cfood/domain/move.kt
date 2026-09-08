@@ -1,6 +1,7 @@
 package xyz.nietongxue.cfood.domain
 
 import arrow.core.Either
+import arrow.core.NonEmptySet
 import arrow.core.right
 import org.slf4j.LoggerFactory
 import xyz.nietongxue.cfood.domain.path.GameMap
@@ -10,7 +11,7 @@ import xyz.nietongxue.common.response.ResponseChainResult
 
 enum class Direction {
     N, S, E, W,
-    NE, NW, SE, SW, None;
+    NE, NW, SE, SW;
 
     companion object {
         fun fromString(direction: String): Direction {
@@ -23,7 +24,6 @@ enum class Direction {
                 "NW", "NORTHWEST" -> NW
                 "SE", "SOUTHEAST" -> SE
                 "SW", "SOUTHWEST" -> SW
-                "NONE" -> None
                 else -> error("Invalid direction: $direction")
             }
         }
@@ -32,7 +32,7 @@ enum class Direction {
             val dx = end.x - start.x
             val dy = end.y - start.y
             return when {
-                dx == 0 && dy == 0 -> None
+                dx == 0 && dy == 0 -> S //default
                 dx > 0 && dy == 0 -> E
                 dx < 0 && dy == 0 -> W
                 dx == 0 && dy > 0 -> N
@@ -81,7 +81,7 @@ class MoveCapability(val actor: Actor, val objectService: ObjectService) : ActCa
                         require(index >= 0)
                         val next = action.plan.positions[minOf(index + actor.maxSpeed, action.plan.positions.size - 1)]
                         val speed =
-                            Speed(Direction.Companion.fromTwoPositions(actor.location.position(), next), actor.maxSpeed)
+                            Speed(Direction.fromTwoPositions(actor.location.position(), next), actor.maxSpeed)
                         actor.speed = speed
                         actor.location = Location.XY(next.x, next.y)
                         if (actor is Carriable && actor.carrying != null)
@@ -97,8 +97,8 @@ class MoveCapability(val actor: Actor, val objectService: ObjectService) : ActCa
                     }
                 }
 
-                else -> Either.Left(ResponseChainResult.NotMe)
-            } else Either.Left(ResponseChainResult.NotMe)
+                else -> notMe
+            } else notMe
     }
 }
 

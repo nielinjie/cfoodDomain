@@ -58,8 +58,8 @@ class CarryCapability(val actor: Actor, val objectService: ObjectService) : ActC
                     }.right()
                 }
 
-                else -> Either.Left(ResponseChainResult.NotMe)
+                else -> notMe
             }
-        else Either.Left(ResponseChainResult.NotMe)
+        else notMe
     }
 }

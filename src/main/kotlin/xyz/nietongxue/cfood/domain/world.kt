@@ -10,7 +10,7 @@ import xyz.nietongxue.cfood.domain.station.Station
 import xyz.nietongxue.cfood.domain.station.Stove
 
 class World(
-    val logisticService: LogisticService,
+    val logisticService: xyz.nietongxue.cfood.domain.logistic.LogisticService,
     val objectService: ObjectService,
     val orchestrateService: OrchestrateService,
     val orderService: OrderService,

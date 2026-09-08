@@ -10,7 +10,7 @@ class Facade() {
     val routingService = RoutingService()
     val bomService = BOMService(productService = productService)
     val objectService = ObjectService(productService = productService)
-    val logisticService = LogisticService()
+    val logisticService = _root_ide_package_.xyz.nietongxue.cfood.domain.logistic.LogisticService()
     val localMap = LocalMap(10, 10)
     val orderService = OrderService(
         productService = productService,

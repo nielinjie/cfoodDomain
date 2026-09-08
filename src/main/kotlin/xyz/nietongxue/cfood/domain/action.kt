@@ -1,6 +1,7 @@
 package xyz.nietongxue.cfood.domain
 
 import arrow.core.Either
+import arrow.core.left
 import org.slf4j.LoggerFactory
 import xyz.nietongxue.common.response.ResponseChainResult
 
@@ -55,6 +56,9 @@ class ActionGroup(val seq: List<Action>, exceptionAction: Action) { //TODO 支�
 
 }
 
+/**
+ * 使用 action 实现动作的对象。
+ */
 interface Actor {
     val queue: MutableList<Action>
     val history: MutableList<Action>
@@ -85,6 +89,10 @@ interface Actor {
 
 }
 
+/**
+ * 对特定 action 动作的实现。
+ */
 abstract class ActCapability {
     abstract fun act(action: Action): Either<ResponseChainResult.NotMe, ActionResult>
+    val notMe = ResponseChainResult.NotMe.left()
 }

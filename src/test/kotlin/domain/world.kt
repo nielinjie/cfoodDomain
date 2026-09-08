@@ -17,7 +17,7 @@ import kotlin.test.Test
 class WorldTest(
     val world: World,
     val objectService: ObjectService,
-    val logisticService: LogisticService,
+    val logisticService: xyz.nietongxue.cfood.domain.logistic.LogisticService,
     productService: ProductService,
     routingService: RoutingService,
     bomService: BOMService,

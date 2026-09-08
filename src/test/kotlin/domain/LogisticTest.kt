@@ -25,7 +25,7 @@ class LogisticTest(
     bomService: BOMService,
     val objectService: ObjectService,
     val applicationContext: ApplicationContext,
-    val logisticService: LogisticService
+    val logisticService: xyz.nietongxue.cfood.domain.logistic.LogisticService
 ) : BaseProducts(
     productService, routingService, bomService
 ) {

@@ -1,6 +1,8 @@
-package xyz.nietongxue.cfood.domain
+package xyz.nietongxue.cfood.domain.operation
 
 import arrow.core.Either
+import xyz.nietongxue.cfood.domain.Object
+import xyz.nietongxue.cfood.domain.Product
 import xyz.nietongxue.common.base.HasId
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7

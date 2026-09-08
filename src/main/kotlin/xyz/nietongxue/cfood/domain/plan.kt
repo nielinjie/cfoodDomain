@@ -1,10 +1,9 @@
 package xyz.nietongxue.cfood.domain
 
+import xyz.nietongxue.cfood.domain.operation.Operation
 import xyz.nietongxue.cfood.domain.station.Station
 import xyz.nietongxue.common.base.Id
-import xyz.nietongxue.common.base.v7
 import kotlin.collections.set
-import kotlin.time.Duration.Companion.minutes
 
 
 data class Plan(val operations: List<Operation>) {

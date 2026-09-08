@@ -8,10 +8,10 @@ import xyz.nietongxue.cfood.domain.CarryCapability
 import xyz.nietongxue.cfood.domain.CheckTaskAction
 import xyz.nietongxue.cfood.domain.Direction
 import xyz.nietongxue.cfood.domain.Location
-import xyz.nietongxue.cfood.domain.LogisticService
-import xyz.nietongxue.cfood.domain.LogisticTask
-import xyz.nietongxue.cfood.domain.LogisticTaskHandle
-import xyz.nietongxue.cfood.domain.LogisticTaskWorkerCapability
+import xyz.nietongxue.cfood.domain.logistic.LogisticService
+import xyz.nietongxue.cfood.domain.logistic.LogisticTask
+import xyz.nietongxue.cfood.domain.logistic.LogisticTaskHandle
+import xyz.nietongxue.cfood.domain.logistic.LogisticTaskWorkerCapability
 import xyz.nietongxue.cfood.domain.Movable
 import xyz.nietongxue.cfood.domain.MoveCapability
 import xyz.nietongxue.cfood.domain.ObjectService

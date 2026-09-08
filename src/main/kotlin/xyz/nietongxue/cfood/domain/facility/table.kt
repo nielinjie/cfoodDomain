@@ -1,9 +1,6 @@
-package xyz.nietongxue.cfood.xyz.nietongxue.cfood.domain.facility
+package xyz.nietongxue.cfood.domain.facility
 
 import xyz.nietongxue.cfood.domain.Location
-import xyz.nietongxue.cfood.domain.facility.Facility
-import xyz.nietongxue.cfood.domain.facility.Port
-import xyz.nietongxue.cfood.domain.facility.Size
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.Name
 import xyz.nietongxue.common.base.v7

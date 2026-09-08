@@ -1,4 +1,4 @@
-package xyz.nietongxue.cfood.xyz.nietongxue.cfood.domain.patron
+package xyz.nietongxue.cfood.domain.patron
 
 /**
  *

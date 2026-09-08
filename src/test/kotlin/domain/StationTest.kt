@@ -23,7 +23,7 @@ class StationTest(
     routingService: RoutingService,
     bomService: BOMService,
     val orchestrateService: OrchestrateService,
-    val logisticService: LogisticService,
+    val logisticService: xyz.nietongxue.cfood.domain.logistic.LogisticService,
     val objectService: ObjectService
 ) : BaseProducts(
     productService, routingService, bomService

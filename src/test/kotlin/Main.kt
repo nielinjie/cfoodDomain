@@ -4,7 +4,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import xyz.nietongxue.cfood.domain.BOMService
-import xyz.nietongxue.cfood.domain.LogisticService
+import xyz.nietongxue.cfood.domain.logistic.LogisticService
 import xyz.nietongxue.cfood.domain.ObjectService
 import xyz.nietongxue.cfood.domain.OrchestrateService
 import xyz.nietongxue.cfood.domain.OrderService
