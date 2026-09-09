@@ -1,12 +1,9 @@
 package xyz.nietongxue.cfood.domain
 
 import arrow.core.Either
-import arrow.core.NonEmptySet
 import arrow.core.right
-import org.slf4j.LoggerFactory
 import xyz.nietongxue.cfood.domain.path.GameMap
 import xyz.nietongxue.cfood.domain.path.PathFinder
-import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.response.ResponseChainResult
 
 enum class Direction {
@@ -67,14 +64,13 @@ interface Movable : HasLocation {
 }
 
 
-class MoveCapability(val actor: Actor, val objectService: ObjectService) : ActCapability() {
-    val logger = LoggerFactory.getLogger(this::class.java)!!
+class MoveAbility(val actor: Actor, val objectService: ObjectService) : Ability() {
     override fun act(action: Action): Either<ResponseChainResult.NotMe, ActionResult> {
         return if (actor is Movable)
             when (action) {
                 is MoveAction -> {
-                    if (actor.location.samePosition(action.dest)) ActionResult(ActionEffect.Consume).also {
-                        logger.info("到达目的地 - ${action.dest}")
+                    if (actor.location.samePosition(action.dest)) ActionResult(ActionOperation.Consume).also {
+                        logging.info("到达目的地 - ${action.dest}")
                     }.right()
                     else {
                         val index = action.plan.positions.indexOf(actor.location.position())
@@ -90,9 +86,9 @@ class MoveCapability(val actor: Actor, val objectService: ObjectService) : ActCa
                                 actor.location,
                                 actor.id
                             )
-                        logger.info("移动中，已到 - ${actor.location}")
+                        logging.info("移动中，已到 - ${actor.location}")
                         ActionResult(
-                            ActionEffect.ReplaceHead(action)
+                            ActionOperation.ReplaceHead(action)
                         ).right()
                     }
                 }

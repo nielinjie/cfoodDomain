@@ -3,7 +3,6 @@ package xyz.nietongxue.cfood.domain.station
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
-import org.slf4j.LoggerFactory
 import xyz.nietongxue.cfood.domain.*
 import xyz.nietongxue.cfood.domain.facility.Port
 import xyz.nietongxue.cfood.domain.facility.Size
@@ -21,19 +20,16 @@ import xyz.nietongxue.common.response.ResponseChainResult
  */
 class Counter(
     override val name: Name,
-    override val id: Id = v7(),
+    id: Id = v7(),
     override val location: Location,
     override val size: Size,
     override val ports: List<Port>,
     val objectService: ObjectService,
     val orderService: OrderService,
     val productService: ProductService
-) : Station {
-    val logger = LoggerFactory.getLogger(this::class.java)!!
-    override val queue: MutableList<Action> = mutableListOf()
-    override val history: MutableList<Action> = mutableListOf()
-    override val actCapabilities: List<ActCapability> = listOf(
-        object : ActCapability() {
+) : Actor(id),Station {
+    override val abilities: List<Ability> = listOf(
+        object : Ability() {
             override fun act(action: Action): Either<ResponseChainResult.NotMe, ActionResult> {
                 return when (action) {
                     is CheckInputAction -> {
@@ -42,13 +38,13 @@ class Counter(
                         grouped.forEach { (orderId, objects) ->
                             val order = orderService.orders.find { it.id == orderId }!!
                             if (order.satisfy(objectService, productService, objects)) {
-                                logger.info("订单完成 - $order")
+                                logging.info("订单完成 - $order")
                                 orderService.finish(order)
-                                logger.info("Object输出 - ${objects.map { it.id }}")
+                                logging.info("Object输出 - ${objects.map { it.id }}")
                                 objectService.output(objects)
                             }
                         }
-                        ActionResult(ActionEffect.MoveToEnd(action)).right()
+                        ActionResult(ActionOperation.MoveToEnd(action)).right()
                     }
 
                     else -> ResponseChainResult.NotMe.left()

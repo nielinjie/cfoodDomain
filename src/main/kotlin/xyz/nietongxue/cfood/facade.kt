@@ -2,6 +2,7 @@ package xyz.nietongxue.cfood
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import xyz.nietongxue.cfood.domain.*
+import xyz.nietongxue.cfood.domain.logistic.LogisticService
 import xyz.nietongxue.cfood.domain.path.LocalMap
 import xyz.nietongxue.common.json.defaultOM
 
@@ -10,7 +11,7 @@ class Facade() {
     val routingService = RoutingService()
     val bomService = BOMService(productService = productService)
     val objectService = ObjectService(productService = productService)
-    val logisticService = _root_ide_package_.xyz.nietongxue.cfood.domain.logistic.LogisticService()
+    val logisticService = LogisticService()
     val localMap = LocalMap(10, 10)
     val orderService = OrderService(
         productService = productService,

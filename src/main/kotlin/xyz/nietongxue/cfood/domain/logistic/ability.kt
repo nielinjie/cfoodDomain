@@ -2,20 +2,18 @@ package xyz.nietongxue.cfood.domain.logistic
 
 import arrow.core.Either
 import arrow.core.right
-import org.slf4j.LoggerFactory
 import xyz.nietongxue.cfood.domain.*
-import xyz.nietongxue.cfood.domain.ActionEffect.*
+import xyz.nietongxue.cfood.domain.ActionOperation.*
 import xyz.nietongxue.cfood.domain.path.GameMap
 import xyz.nietongxue.common.base.Id
-import xyz.nietongxue.common.response.ResponseChainResult
+import xyz.nietongxue.common.response.ResponseChainResult.NotMe
 
-class LogisticTaskWorkerCapability(
+class LogisticAbility(
     val actor: Actor,
     val logisticService: LogisticService,
     val objectService: ObjectService,
     val localMap: GameMap
-) : ActCapability() {
-    val logger = LoggerFactory.getLogger(this::class.java)!!
+) : Ability() {
 
     fun LogisticUnloadTask.toActions(actor: Movable): List<Action> {
         val obj: Id = objectService.getOneFree(this.productId)!!.id
@@ -62,12 +60,12 @@ class LogisticTaskWorkerCapability(
     }
 
 
-    override fun act(action: Action): Either<ResponseChainResult.NotMe, ActionResult> {
+    override fun act(action: Action): Either<NotMe, ActionResult> {
 
-        return if (actor is LogisticTaskHandle) when (action) {
+        return if (actor is TaskHandle<*>) when (action) {
             is TaskStateUpdate -> {
                 require(actor.task != null)
-                logger.info("任务执行完成 - ${action.taskId}")
+                logging.info("任务执行完成 - ${action.taskId}")
                 logisticService.finish(actor.task!!)
                 actor.task = null
                 ActionResult(Consume)
@@ -82,9 +80,10 @@ class LogisticTaskWorkerCapability(
                 )
                 else {
                     val task = logisticService.dispatch(actor.id)
+                    require(actor is Movable)
                     if (task != null) {
-                        actor.task = task
-                        logger.info("接受任务 - $task")
+                        (actor as TaskHandle<LogisticTask>).task = task
+                        logging.info("接受任务 - $task")
                         ActionResult(
                             ListenLoop(
                                 when (task) {

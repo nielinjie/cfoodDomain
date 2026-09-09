@@ -115,7 +115,7 @@ class World(
             it.tick()
         }
         stations.forEach {
-            it.tick()
+            (it as? Actor)?.tick()
         }
     }
 

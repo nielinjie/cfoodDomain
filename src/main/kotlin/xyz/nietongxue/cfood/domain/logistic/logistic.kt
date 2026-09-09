@@ -1,8 +1,8 @@
 package xyz.nietongxue.cfood.domain.logistic
 
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory.getLogger
 import xyz.nietongxue.cfood.domain.Location
-import xyz.nietongxue.cfood.domain.Movable
 import xyz.nietongxue.cfood.domain.Task
 import xyz.nietongxue.cfood.domain.TaskState
 import xyz.nietongxue.cfood.domain.TaskState.Finished
@@ -15,7 +15,7 @@ class LogisticService(
 ) : xyz.nietongxue.cfood.domain.TaskManager {
 
 
-    val logger = getLogger(this::class.java)
+    val logger: Logger = getLogger(this::class.java)
 
     val tasks = mutableListOf<LogisticTask>()
     val states = mutableMapOf<Id, TaskState>()
@@ -51,7 +51,7 @@ class LogisticService(
 }
 
 
-interface LogisticTaskHandle : Movable {
-    var task: LogisticTask?
+interface TaskHandle<T:Task>  {
+    var task: T?
 }
 

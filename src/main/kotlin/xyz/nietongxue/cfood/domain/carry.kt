@@ -2,7 +2,6 @@ package xyz.nietongxue.cfood.domain
 
 import arrow.core.Either
 import arrow.core.right
-import org.slf4j.LoggerFactory
 import xyz.nietongxue.cfood.domain.station.Station
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.response.ResponseChainResult
@@ -18,8 +17,7 @@ interface Carriable {
 }
 
 
-class CarryCapability(val actor: Actor, val objectService: ObjectService) : ActCapability() {
-    val logger = LoggerFactory.getLogger(this::class.java)!!
+class CarryAbility(val actor: Actor, val objectService: ObjectService) : Ability() {
 
     override fun act(action: Action): Either<ResponseChainResult.NotMe, ActionResult> {
         return if (actor is Movable && actor is Carriable)
@@ -30,8 +28,8 @@ class CarryCapability(val actor: Actor, val objectService: ObjectService) : ActC
                     require(objectService.getLocation(action.obj).samePosition(actor.location))
                     actor.carrying = action.obj
                     objectService.lock(action.obj, actor.id)
-                    ActionResult(ActionEffect.Consume).also {
-                        logger.info("载入对象 - ${action.obj}")
+                    ActionResult(ActionOperation.Consume).also {
+                        logging.info("载入对象 - ${action.obj}")
                     }.right()
                 }
 
@@ -41,8 +39,8 @@ class CarryCapability(val actor: Actor, val objectService: ObjectService) : ActC
                     val obj = actor.carrying
                     actor.carrying = null
                     objectService.release(obj!!, actor.id)
-                    ActionResult(ActionEffect.Consume).also {
-                        logger.info("卸载对象 - $obj")
+                    ActionResult(ActionOperation.Consume).also {
+                        logging.info("卸载对象 - $obj")
                     }.right()
                 }
 
@@ -53,8 +51,8 @@ class CarryCapability(val actor: Actor, val objectService: ObjectService) : ActC
                     val obj = actor.carrying
                     actor.carrying = null
                     objectService.transfer(obj!!, action.accepter.id, actor.id)
-                    ActionResult(ActionEffect.Consume).also {
-                        logger.info("转交对象 - $obj to ${action.accepter.id}")
+                    ActionResult(ActionOperation.Consume).also {
+                        logging.info("转交对象 - $obj to ${action.accepter.id}")
                     }.right()
                 }
 

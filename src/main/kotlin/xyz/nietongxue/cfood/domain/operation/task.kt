@@ -11,3 +11,7 @@ class OperationAction(val operation: Operation, var progress: Int, val startedTi
 class CheckInputAction() : Action
 class RequestInputAction() : Action
 
+
+interface OperationTaskHandle {
+    var task: OperationTask?
+}

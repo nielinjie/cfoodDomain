@@ -5,8 +5,9 @@ import xyz.nietongxue.cfood.domain.*
 import xyz.nietongxue.cfood.domain.facility.Port
 import xyz.nietongxue.cfood.domain.facility.Size
 import xyz.nietongxue.cfood.domain.logistic.LogisticService
-import xyz.nietongxue.cfood.domain.operation.OperationHandleCapability
+import xyz.nietongxue.cfood.domain.operation.OperateAbility
 import xyz.nietongxue.cfood.domain.operation.OperationTask
+import xyz.nietongxue.cfood.domain.operation.OperationTaskHandle
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7
 
@@ -16,7 +17,7 @@ import xyz.nietongxue.common.base.v7
  */
 class Stove(
     override val name: String,
-    override val id: Id = v7(),
+     id: Id = v7(),
     override val size: Size,
     override val ports: List<Port>,
     override var location: Location,
@@ -24,19 +25,21 @@ class Stove(
     val objectService: ObjectService,
     val logisticService: LogisticService,
     val world: World
-) : Station {
+) : Actor(id),Station, OperationTaskHandle {
     val logger = LoggerFactory.getLogger(this::class.java)!!
-    var operationTask: OperationTask? = null
+    override var task: OperationTask? = null
+
 
     fun init() {
         queue.add(CheckTaskAction)
     }
 
 
-    override val queue: MutableList<Action> = mutableListOf()
-    override val history: MutableList<Action> = mutableListOf()
-    override val actCapabilities: List<ActCapability> = listOf(
-        OperationHandleCapability(
+
+    override val abilities: List<Ability> = listOf(
+        OperateAbility(
+            this@Stove,
+            this@Stove,
             this@Stove,
             logisticService,
             objectService,
