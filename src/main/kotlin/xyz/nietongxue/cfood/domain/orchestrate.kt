@@ -1,13 +1,15 @@
 package xyz.nietongxue.cfood.domain
 
+import jakarta.annotation.PostConstruct
 import xyz.nietongxue.cfood.domain.operation.Consume
 import xyz.nietongxue.cfood.domain.operation.Operation
 import xyz.nietongxue.cfood.domain.operation.OperationTask
 import xyz.nietongxue.cfood.domain.operation.ProcessingOperation
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7
+import org.springframework.stereotype.Service
 
-
+@Service
 class OrchestrateService(
     val productService: ProductService,
     val routingService: RoutingService,
@@ -15,6 +17,11 @@ class OrchestrateService(
     val orderService: OrderService
 ) : TaskManager, OrderListener {
     val logger = org.slf4j.LoggerFactory.getLogger(this::class.java)!!
+
+    @PostConstruct
+    fun init() {
+        orderService.listener = this
+    }
 
     var plan: Plan? = null
     var execution: PlanExecution? = null

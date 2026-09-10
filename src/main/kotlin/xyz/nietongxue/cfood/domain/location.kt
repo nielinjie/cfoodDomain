@@ -1,8 +1,20 @@
 package xyz.nietongxue.cfood.domain
 
 
-data class Position(val x: Int, val y: Int)
+data class Position(val x: Int, val y: Int) {
+    companion object {
+        val zero: Position = Position(0, 0)
+    }
+}
 
+data class Size(
+    val width: Int,
+    val height: Int
+) {
+    companion object {
+        val zero: Size = Size(0, 0)
+    }
+}
 
 interface Location {
     data class XY(val x: Int, val y: Int) : Location {

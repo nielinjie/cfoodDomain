@@ -1,6 +1,6 @@
 package xyz.nietongxue.cfood.domain.operation
 
-import xyz.nietongxue.cfood.domain.Action
+import xyz.nietongxue.cfood.domain.action.Action
 import xyz.nietongxue.cfood.domain.Task
 import xyz.nietongxue.cfood.domain.TaskState
 import xyz.nietongxue.common.base.Id

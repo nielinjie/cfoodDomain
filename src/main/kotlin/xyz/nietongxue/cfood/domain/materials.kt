@@ -1,5 +1,6 @@
 package xyz.nietongxue.cfood.domain
 
+import org.springframework.stereotype.Service
 import xyz.nietongxue.common.base.HasId
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7
@@ -18,6 +19,7 @@ data class BOMLine(override val id: Id = v7(), val componentId: Id, val quantity
 data class Version(val version: Int)
 
 
+@Service
 class BOMService(
     val productService: ProductService
 ) {

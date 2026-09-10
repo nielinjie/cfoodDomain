@@ -1,5 +1,6 @@
 package xyz.nietongxue.cfood.domain
 
+import org.springframework.stereotype.Service
 import xyz.nietongxue.common.base.*
 
 /**
@@ -23,6 +24,7 @@ class Object(override val id: Id, val productId: Id, val labels: MutableMap<Stri
     }
 }
 
+@Service
 class ObjectService(
     val productService: ProductService
 ) {

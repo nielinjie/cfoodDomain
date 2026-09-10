@@ -1,13 +1,12 @@
 package xyz.nietongxue.cfood.domain
 
+import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestConstructor
 import org.springframework.test.context.TestConstructor.AutowireMode
 import java.time.LocalDateTime
-import kotlin.test.Test
 
 
-@Suppress("SpringJavaInjectionPointsAutowiringInspection")
 @SpringBootTest
 @TestConstructor(autowireMode = AutowireMode.ALL)
 class OperationTest(
@@ -33,6 +32,9 @@ class OperationTest(
             state = OrderState.Waiting
         )
         orderService.accept(order)
+        println("orders size: ${orderService.orders.size}")
+        println("orders state: ${orderService.orders.map { it.state }}")
+        println("getWaiting size: ${orderService.getWaiting().size}")
         val plan = orchestrateService.plan
         val execution = orchestrateService.execution
         println(plan)

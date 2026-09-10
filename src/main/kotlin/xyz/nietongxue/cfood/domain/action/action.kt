@@ -1,10 +1,7 @@
-package xyz.nietongxue.cfood.domain
+package xyz.nietongxue.cfood.domain.action
 
 import arrow.core.Either
-import arrow.core.left
 import org.slf4j.LoggerFactory
-import xyz.nietongxue.common.base.Record
-import xyz.nietongxue.common.response.ResponseChainResult
 
 /**
  * 对 action queue 的操作。
@@ -18,10 +15,13 @@ interface ActionOperation {
      * 更新自己。一般用在一个动作正常进行，没有完成，继续干。
      * 比如移动。没到目的地，继续。
      */
-    data class ReplaceHead(val action: Action) : ActionOperation {
+    data class ReplaceHead(val actions: List<Action>) : ActionOperation {
         override fun doWithQueue(queue: MutableList<Action>) {
-            queue[0] = action
+            queue.removeFirst()
+            queue.addAll(0, actions)
         }
+
+        constructor(vararg actions: Action) : this(actions.toList())
     }
 
     /**
@@ -29,7 +29,7 @@ interface ActionOperation {
      */
     data object Consume : ActionOperation {
         override fun doWithQueue(queue: MutableList<Action>) {
-            queue.removeAt(0)
+            queue.removeFirst()
         }
     }
 
@@ -112,28 +112,4 @@ abstract class Actor(
     }
 
 
-}
-
-/**
- * 对特定 action 动作的实现。
- * 对 Action 的处理，体现了 Actor 的能力，所以叫 ability
- */
-abstract class Ability {
-    abstract fun act(action: Action): Either<ResponseChainResult.NotMe, ActionResult>
-    val notMe = ResponseChainResult.NotMe.left()
-    val logging = ActionLogging
-}
-
-object ActionLogging : Logging() {
-    override val logger = LoggerFactory.getLogger(this::class.java)!!
-
-}
-
-abstract class Logging {
-    val records = mutableListOf<Record<String>>()
-    abstract val logger: org.slf4j.Logger
-    fun info(msg: String) {
-        records.add(Record(msg))
-        logger.info(msg)
-    }
 }

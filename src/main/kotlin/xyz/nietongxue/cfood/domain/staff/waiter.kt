@@ -1,6 +1,8 @@
 package xyz.nietongxue.cfood.domain.staff
 
 import xyz.nietongxue.cfood.domain.*
+import xyz.nietongxue.cfood.domain.action.Ability
+import xyz.nietongxue.cfood.domain.action.Actor
 import xyz.nietongxue.cfood.domain.logistic.LogisticAbility
 import xyz.nietongxue.cfood.domain.logistic.LogisticService
 import xyz.nietongxue.cfood.domain.logistic.LogisticTask
@@ -19,7 +21,7 @@ class Waiter(
     val logisticService: LogisticService,
     id: Id = v7(),
     val localMap: GameMap,
-) : Actor(id), Movable, Carriable, TaskHandle<LogisticTask> {
+) : Actor(id), Movable, Carriable, TaskHandle<LogisticTask>, Staff {
 
     fun init() {
         queue.add(CheckTaskAction)
@@ -31,7 +33,6 @@ class Waiter(
     override var carrying: String? = null
     override var task: LogisticTask? = null
     override var speed: Speed = Speed(Direction.S, 0)
-
 
 
     override val abilities: List<Ability> = listOf(

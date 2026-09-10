@@ -1,5 +1,6 @@
 package xyz.nietongxue.cfood.domain
 
+import org.springframework.stereotype.Service
 import xyz.nietongxue.common.base.HasId
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7
@@ -40,6 +41,7 @@ interface OrderListener {
     fun orderChangeEvent(order: Order)
 }
 
+@Service
 class OrderService(
     val productService: ProductService,
     val routingService: RoutingService,

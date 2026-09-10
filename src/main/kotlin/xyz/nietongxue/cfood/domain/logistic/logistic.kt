@@ -2,6 +2,7 @@ package xyz.nietongxue.cfood.domain.logistic
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory.getLogger
+import org.springframework.stereotype.Service
 import xyz.nietongxue.cfood.domain.Location
 import xyz.nietongxue.cfood.domain.Task
 import xyz.nietongxue.cfood.domain.TaskState
@@ -10,7 +11,7 @@ import xyz.nietongxue.cfood.domain.TaskState.Waiting
 import xyz.nietongxue.cfood.domain.station.Station
 import xyz.nietongxue.common.base.Id
 
-
+@Service
 class LogisticService(
 ) : xyz.nietongxue.cfood.domain.TaskManager {
 

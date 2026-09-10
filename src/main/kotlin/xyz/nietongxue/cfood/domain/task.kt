@@ -1,5 +1,6 @@
 package xyz.nietongxue.cfood.domain
 
+import xyz.nietongxue.cfood.domain.action.Action
 import xyz.nietongxue.common.base.HasId
 
 interface Task : HasId

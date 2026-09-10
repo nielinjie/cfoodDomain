@@ -16,7 +16,6 @@ import xyz.nietongxue.cfood.domain.station.Stove
 import xyz.nietongxue.common.base.stuff
 
 
-@Suppress("SpringJavaInjectionPointsAutowiringInspection")
 @SpringBootTest
 @TestConstructor(autowireMode = AutowireMode.ALL)
 class LogisticTest(

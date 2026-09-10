@@ -4,7 +4,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestConstructor
 import org.springframework.test.context.TestConstructor.AutowireMode
 import java.time.Duration
-import kotlin.test.Test
+import org.junit.jupiter.api.Test
 import kotlin.time.Duration.Companion.minutes
 
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")

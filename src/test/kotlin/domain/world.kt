@@ -9,7 +9,7 @@ import xyz.nietongxue.cfood.Main
 import xyz.nietongxue.cfood.domain.path.GameMap
 import xyz.nietongxue.cfood.domain.path.LocalMap
 import java.time.LocalDateTime
-import kotlin.test.Test
+import org.junit.jupiter.api.Test
 
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
 @SpringBootTest(classes = [Main::class])
@@ -40,7 +40,7 @@ class WorldTest(
         val order = Order(
             code = "TOMATO_EGG_ORDER",
             lines = listOf(
-                OrderLine(productCode = tomatoEgg.id, quantity = 1)
+                OrderLine(productCode = "TOMATO_EGG", quantity = 1)
             ),
             requiredTime = LocalDateTime.now().plusHours(12),
             state = OrderState.Waiting

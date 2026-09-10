@@ -2,6 +2,7 @@ package xyz.nietongxue.cfood.domain
 
 import arrow.core.Either
 import arrow.core.right
+import xyz.nietongxue.cfood.domain.action.*
 import xyz.nietongxue.cfood.domain.path.GameMap
 import xyz.nietongxue.cfood.domain.path.PathFinder
 import xyz.nietongxue.common.response.ResponseChainResult
@@ -41,7 +42,11 @@ enum class Direction {
 }
 
 
-data class Speed(val direction: Direction, val distance: Int)
+data class Speed(val direction: Direction, val distance: Int){
+    companion object{
+        val zero = Speed(Direction.S, 0)
+    }
+}
 
 class PathPlan(val positions: List<Position>) {
     companion object {

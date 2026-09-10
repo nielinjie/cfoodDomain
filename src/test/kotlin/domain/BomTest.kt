@@ -3,7 +3,7 @@ package xyz.nietongxue.cfood.domain
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.TestConstructor
 import org.springframework.test.context.TestConstructor.AutowireMode
-import kotlin.test.Test
+import org.junit.jupiter.api.Test
 
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
 @SpringBootTest
