@@ -1,0 +1,9 @@
+### GET request to example server
+GET http://localhost:8088/world/snapshot
+
+###
+GET http://localhost:8088/world/snapshot/stream?id=123
+
+
+###
+POST http://localhost:8088/order

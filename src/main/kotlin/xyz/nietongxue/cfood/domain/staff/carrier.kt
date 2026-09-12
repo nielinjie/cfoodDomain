@@ -39,10 +39,10 @@ class Carrier(
 
 
     override var location: Location = Location.XY(0, 0)
-    override var maxSpeed: Int = 1
+    override var maxSpeed: Int = 20
     override var carrying: String? = null
     override var task: LogisticTask? = null
-    override var speed: Speed = Speed(Direction.S, 0)
+    override var speed: Speed = Speed.zero
 
 
     override val abilities: List<Ability> = listOf(

@@ -3,19 +3,24 @@ package xyz.nietongxue.cfood.domain
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.jupiter.api.Test
-import xyz.nietongxue.cfood.Facade
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import xyz.nietongxue.cfood.Universe
 import xyz.nietongxue.common.json.defaultOM
 import xyz.nietongxue.common.json.ja
 import xyz.nietongxue.common.json.jo
 import java.time.LocalDateTime
 
-class FacadeTest {
 
+@SpringBootTest
+class UniverseTest {
+
+    @Autowired
+    lateinit var universe: Universe
 
     @Test
     fun product() {
-        val facade = Facade()
-        with(facade) {
+        with(universe.world) {
             val products = productService.products.map { defaultOM.valueToTree<JsonNode>(it) }
             val routings = routingService.routingList.map { defaultOM.valueToTree<JsonNode>(it) }
             val bom = bomService.boms.map { defaultOM.valueToTree<JsonNode>(it) }
@@ -49,8 +54,7 @@ class FacadeTest {
 //            bomService.save(bom)
             bom
         }
-        val facade = Facade()
-        with(facade) {
+        with(universe.world) {
             productService.products.clear()
             productService.products.addAll(products)
             routingService.routingList.clear()
@@ -61,16 +65,13 @@ class FacadeTest {
     }
 
 
-
-
     @Test
     fun loadMap() {
-        val facade = Facade()
         val string = (javaClass.getResource("/map.json")!!.readText())
         val world = defaultOM.readValue<WorldDeclare>(string)
         println(world)
-        facade.world.setupFromDeclare(world)
-        facade.world.also {
+        universe.world.setupFromDeclare(world)
+        universe.world.also {
             println(it)
         }
 
@@ -78,11 +79,10 @@ class FacadeTest {
 
     @Test
     fun setupTest() {
-        val facade = Facade()
-        facade.setupMap((javaClass.getResource("/map.json")!!.readText()))
-        facade.setupProducts((javaClass.getResource("/products.json")!!.readText()))
 
-        with(facade) {
+        universe.start()
+        Thread.sleep(2000)
+        with(universe.world) {
             val order = Order(
                 code = "TOMATO_EGG_ORDER",
                 lines = listOf(
@@ -92,13 +92,12 @@ class FacadeTest {
                 state = OrderState.Waiting
             )
             orderService.accept(order)
-            objectService.inputByCode("TOMATO", 10, Location.XY(3, 5))
-            objectService.inputByCode("EGG", 10, Location.XY(5, 7))
+            objectService.inputByCode("TOMATO", 10, Location.XY(30, 50))
+            objectService.inputByCode("EGG", 10, Location.XY(50, 70))
         }
-        facade.start()
 
         Thread.sleep(10000)
-        facade.stop()
+        universe.stop()
     }
 
 }

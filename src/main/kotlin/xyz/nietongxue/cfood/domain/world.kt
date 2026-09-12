@@ -1,65 +1,47 @@
 package xyz.nietongxue.cfood.domain
 
+import com.fasterxml.jackson.module.kotlin.readValue
+import org.springframework.stereotype.Component
 import xyz.nietongxue.cfood.domain.action.Actor
+import xyz.nietongxue.cfood.domain.facility.HouseService
 import xyz.nietongxue.cfood.domain.facility.Port
+import xyz.nietongxue.cfood.domain.logistic.LogisticService
 import xyz.nietongxue.cfood.domain.path.GameMap
 import xyz.nietongxue.cfood.domain.path.LocalMap
 import xyz.nietongxue.cfood.domain.staff.Carrier
+import xyz.nietongxue.cfood.domain.staff.StaffService
 import xyz.nietongxue.cfood.domain.station.Counter
 import xyz.nietongxue.cfood.domain.station.Station
 import xyz.nietongxue.cfood.domain.station.Stove
+import xyz.nietongxue.common.json.defaultOM
 
+
+@Component
 class World(
-    val logisticService: xyz.nietongxue.cfood.domain.logistic.LogisticService,
+    val logisticService: LogisticService,
     val objectService: ObjectService,
     val orchestrateService: OrchestrateService,
     val orderService: OrderService,
+    val productService: ProductService,
+    val bomService: BOMService,
+    val routingService: RoutingService,
+    val staffService: StaffService,
+    val houseService: HouseService,
     var localMap: GameMap? = null,
 ) {
 
-    val carriers = mutableListOf<Carrier>()
-    val stations = mutableListOf<Station>()
+    init {
+        orderService.listener = orchestrateService
+    }
 
-    //    fun init() {
-//        carriers.add(
-//            Carrier(
-//                objectService = objectService,
-//                logisticService = logisticService,
-//                localMap = localMap
-//            ).also {
-//                it.init()
-//            }
-//        )
-//        stations.add(
-//            Stove(
-//                name = "main",
-//                orchestrateService = orchestrateService,
-//                objectService = objectService,
-//                logisticService = logisticService,
-//                world = this
-//            ).also {
-//                it.location = Location.XY(5, 5)
-//                it.init()
-//            },
-//        )
-//        stations.add(
-//            Counter(
-//                name = "counter",
-//                location = Location.XY(0, 0),
-//                objectService = objectService,
-//                orderService = orderService
-//            ).also {
-//                it.init()
-//            }
-//        )
-//    }
+
     fun setupFromDeclare(worldDeclare: WorldDeclare) {
         val localMap = LocalMap(worldDeclare.map.width, worldDeclare.map.height)
         this.localMap = localMap
         worldDeclare.stations.forEach {
             when (it.type) {
                 "Stove" -> {
-                    stations.add(
+                    houseService.facilities.add(
                         Stove(
                             name = it.name,
                             orchestrateService = orchestrateService,
@@ -76,7 +58,7 @@ class World(
                 }
 
                 "Counter" -> {
-                    stations.add(
+                    houseService.facilities.add(
                         Counter(
                             name = it.name,
                             location = Location.XY(it.location.x, it.location.y),
@@ -93,7 +75,7 @@ class World(
             }
         }
         worldDeclare.carriers.forEach {
-            carriers.add(
+            staffService.staff.add(
                 Carrier(
                     objectService = objectService,
                     logisticService = logisticService,
@@ -107,17 +89,43 @@ class World(
     }
 
     fun getStation(name: String): Station? {
-        return stations.firstOrNull { it.name == name }
+        return houseService.facilities.filterIsInstance<Station>().firstOrNull { it.name == name }
     }
 
     fun tick() {
-        carriers.forEach {
-            it.tick()
+        staffService.staff.forEach {
+            (it as? Actor)?.tick()
         }
-        stations.forEach {
+        houseService.facilities.forEach {
             (it as? Actor)?.tick()
         }
     }
+
+    fun setupMap(json: String) {
+        val world = defaultOM.readValue<WorldDeclare>(json)
+        this.setupFromDeclare(world)
+    }
+
+    fun setupProducts(json: String) {
+        val tree = defaultOM.readTree(json)
+        val products = tree["products"].map {
+            defaultOM.treeToValue(it, Product::class.java)
+        }
+        val routings = tree["routings"].map {
+            defaultOM.treeToValue(it, Routing::class.java)
+        }
+        val bom = tree["boms"].map {
+            defaultOM.treeToValue(it, BOM::class.java)
+        }
+        productService.products.clear()
+        productService.products.addAll(products)
+        routingService.routingList.clear()
+        routingService.routingList.addAll(routings)
+        bomService.boms.clear()
+        bomService.boms.addAll(bom)
+
+    }
+
 
 }
 

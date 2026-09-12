@@ -1,6 +1,5 @@
 package xyz.nietongxue.cfood.domain.patron
 
-import xyz.nietongxue.cfood.domain.Direction
 import xyz.nietongxue.cfood.domain.Location
 import xyz.nietongxue.cfood.domain.Speed
 import xyz.nietongxue.cfood.domain.action.Ability
@@ -35,7 +34,7 @@ class Mouth(
 
     override var location: Location = Location.XY(0, 0)
     override var maxSpeed: Int = 1
-    override var speed: Speed = Speed(Direction.S, 0)
+    override var speed: Speed = Speed.zero
     override val abilities: List<Ability>
         get() = TODO("Not yet implemented")
 }

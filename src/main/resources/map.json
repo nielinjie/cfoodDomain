@@ -1,0 +1,37 @@
+{
+  "stations" : [ {
+    "name" : "main",
+    "type" : "Stove",
+    "location" : {
+      "x" : 200,
+      "y" : 150
+    },
+    "size": {
+      "width": 20,
+      "height": 20
+    },
+    "ports": []
+  }, {
+    "name" : "counter",
+    "type" : "Counter",
+    "location" : {
+      "x" : 0,
+      "y" : 0
+    },
+    "size": {
+      "width": 20,
+      "height": 20
+    },
+    "ports": []
+  } ],
+  "carriers" : [ {
+    "location" : {
+      "x" : 0,
+      "y" : 0
+    }
+  } ],
+  "map" : {
+    "width" : 400,
+    "height" : 300
+  }
+}

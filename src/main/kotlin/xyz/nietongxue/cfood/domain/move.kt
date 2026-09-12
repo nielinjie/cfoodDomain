@@ -2,14 +2,17 @@ package xyz.nietongxue.cfood.domain
 
 import arrow.core.Either
 import arrow.core.right
+import xyz.nietongxue.cfood.domain.Direction.*
 import xyz.nietongxue.cfood.domain.action.*
 import xyz.nietongxue.cfood.domain.path.GameMap
 import xyz.nietongxue.cfood.domain.path.PathFinder
 import xyz.nietongxue.common.response.ResponseChainResult
+import kotlin.math.sqrt
 
 enum class Direction {
     N, S, E, W,
-    NE, NW, SE, SW;
+    NE, NW, SE, SW, NONE;
+
 
     companion object {
         fun fromString(direction: String): Direction {
@@ -22,6 +25,7 @@ enum class Direction {
                 "NW", "NORTHWEST" -> NW
                 "SE", "SOUTHEAST" -> SE
                 "SW", "SOUTHWEST" -> SW
+                "NONE", "NONE" -> NONE
                 else -> error("Invalid direction: $direction")
             }
         }
@@ -29,22 +33,55 @@ enum class Direction {
         fun fromTwoPositions(start: Position, end: Position): Direction {
             val dx = end.x - start.x
             val dy = end.y - start.y
+
             return when {
-                dx == 0 && dy == 0 -> S //default
-                dx > 0 && dy == 0 -> E
-                dx < 0 && dy == 0 -> W
-                dx == 0 && dy > 0 -> N
-                dx == 0 && dy < 0 -> S
-                else -> error("Invalid direction") //TODO 支持斜向的。
+                dx > 0 && dy < 0 -> NE
+                dx < 0 && dy < 0 -> NW
+                dx > 0 && dy > 0 -> SE
+                dx < 0 && dy > 0 -> SW
+                dx > 0 -> E
+                dx < 0 -> W
+                dy < 0 -> N
+                dy > 0 -> S
+                else -> NONE
             }
         }
     }
 }
 
+/**
+ * dy/dx
+ */
+data class Degree(val dy: Double, val dx: Double) {
 
-data class Speed(val direction: Direction, val distance: Int){
-    companion object{
-        val zero = Speed(Direction.S, 0)
+    fun getDirection(): Direction {
+        return when {
+            dx > 0 && dy < 0 -> NE
+            dx < 0 && dy < 0 -> NW
+            dx > 0 && dy > 0 -> SE
+            dx < 0 && dy > 0 -> SW
+            dx > 0 -> E
+            dx < 0 -> W
+            dy < 0 -> N
+            dy > 0 -> S
+            else -> NONE
+        }
+    }
+}
+
+
+data class Speed(val degree: Degree, val direction: Direction = degree.getDirection(), val distance: Double) {
+    companion object {
+        val zero = Speed(Degree(0.0, 0.0), distance = 0.0)
+        fun fromTwoPositions(start: Position, end: Position): Speed {
+            val dx = end.x - start.x
+            val dy = end.y - start.y
+
+            if (dx == 0 && dy == 0) return zero
+
+            val distance = sqrt((dx * dx + dy * dy).toDouble())
+            return Speed(Degree(dy.toDouble(), dx.toDouble()), distance = distance)
+        }
     }
 }
 
@@ -74,15 +111,19 @@ class MoveAbility(val actor: Actor, val objectService: ObjectService) : Ability(
         return if (actor is Movable)
             when (action) {
                 is MoveAction -> {
-                    if (actor.location.samePosition(action.dest)) ActionResult(ActionOperation.Consume).also {
-                        logging.info("到达目的地 - ${action.dest}")
-                    }.right()
-                    else {
+                    if (actor.location.samePosition(action.dest)) {
+                        actor.speed = Speed.zero
+                        ActionResult(ActionOperation.Consume).also {
+                            logging.info("到达目的地 - ${action.dest}")
+                        }.right()
+                    } else {
                         val index = action.plan.positions.indexOf(actor.location.position())
                         require(index >= 0)
                         val next = action.plan.positions[minOf(index + actor.maxSpeed, action.plan.positions.size - 1)]
+                        val next2 =
+                            action.plan.positions[minOf(index + (actor.maxSpeed * 2), action.plan.positions.size - 1)]
                         val speed =
-                            Speed(Direction.fromTwoPositions(actor.location.position(), next), actor.maxSpeed)
+                            Speed.fromTwoPositions(next, next2)
                         actor.speed = speed
                         actor.location = Location.XY(next.x, next.y)
                         if (actor is Carriable && actor.carrying != null)
@@ -92,6 +133,8 @@ class MoveAbility(val actor: Actor, val objectService: ObjectService) : Ability(
                                 actor.id
                             )
                         logging.info("移动中，已到 - ${actor.location}")
+                        logging.info("移动中，速度 - ${actor.speed}")
+                        logging.info("移动中，下个位置 - $next2")
                         ActionResult(
                             ActionOperation.ReplaceHead(action)
                         ).right()
