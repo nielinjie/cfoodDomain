@@ -7,7 +7,7 @@ import xyz.nietongxue.cfood.domain.logistic.LogisticAbility
 import xyz.nietongxue.cfood.domain.logistic.LogisticService
 import xyz.nietongxue.cfood.domain.logistic.LogisticTask
 import xyz.nietongxue.cfood.domain.logistic.TaskHandle
-import xyz.nietongxue.cfood.domain.path.GameMap
+import xyz.nietongxue.cfood.domain.map.GameMap
 import xyz.nietongxue.common.base.Id
 import xyz.nietongxue.common.base.v7
 

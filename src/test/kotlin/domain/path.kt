@@ -1,7 +1,7 @@
 package xyz.nietongxue.cfood.domain
 
 import org.junit.jupiter.api.Test
-import xyz.nietongxue.cfood.domain.path.GameMap
+import xyz.nietongxue.cfood.domain.map.GameMap
 import xyz.nietongxue.cfood.domain.path.PathFinder
 
 class PathFinderTest {

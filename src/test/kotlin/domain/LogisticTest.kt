@@ -9,8 +9,8 @@ import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.test.context.TestConstructor
 import org.springframework.test.context.TestConstructor.AutowireMode
-import xyz.nietongxue.cfood.domain.path.GameMap
-import xyz.nietongxue.cfood.domain.path.LocalMap
+import xyz.nietongxue.cfood.domain.map.GameMap
+import xyz.nietongxue.cfood.domain.map.SimpleMap
 import xyz.nietongxue.cfood.domain.staff.Carrier
 import xyz.nietongxue.cfood.domain.station.Stove
 import xyz.nietongxue.common.base.stuff
@@ -35,7 +35,7 @@ class LogisticTest(
     class Configure() {
         @Bean
         fun localMap(): GameMap {
-            return LocalMap(10, 10)
+            return SimpleMap(10, 10)
         }
     }
 

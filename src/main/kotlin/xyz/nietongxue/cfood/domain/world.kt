@@ -5,9 +5,10 @@ import org.springframework.stereotype.Component
 import xyz.nietongxue.cfood.domain.action.Actor
 import xyz.nietongxue.cfood.domain.facility.HouseService
 import xyz.nietongxue.cfood.domain.facility.Port
+import xyz.nietongxue.cfood.domain.facility.Storage
 import xyz.nietongxue.cfood.domain.logistic.LogisticService
-import xyz.nietongxue.cfood.domain.path.GameMap
-import xyz.nietongxue.cfood.domain.path.LocalMap
+import xyz.nietongxue.cfood.domain.map.GameMap
+import xyz.nietongxue.cfood.domain.map.SimpleMap
 import xyz.nietongxue.cfood.domain.staff.Carrier
 import xyz.nietongxue.cfood.domain.staff.StaffService
 import xyz.nietongxue.cfood.domain.station.Counter
@@ -36,7 +37,7 @@ class World(
 
 
     fun setupFromDeclare(worldDeclare: WorldDeclare) {
-        val localMap = LocalMap(worldDeclare.map.width, worldDeclare.map.height)
+        val localMap = SimpleMap(worldDeclare.map.width, worldDeclare.map.height)
         this.localMap = localMap
         worldDeclare.stations.forEach {
             when (it.type) {
@@ -72,6 +73,17 @@ class World(
                         }
                     )
                 }
+                "Storage" -> {
+                    houseService.facilities.add(
+                        Storage(
+                            name = it.name,
+                            location = Location.XY(it.location.x, it.location.y),
+                            size = it.size,
+                            ports = it.ports,
+                        )
+                    )
+                }
+
             }
         }
         worldDeclare.carriers.forEach {

@@ -12,11 +12,23 @@
     },
     "ports": []
   }, {
+    "name" : "storage",
+    "type" : "Storage",
+    "location" : {
+      "x" : 200,
+      "y" : 200
+    },
+    "size": {
+      "width": 20,
+      "height": 20
+    },
+    "ports": []
+  } ,{
     "name" : "counter",
     "type" : "Counter",
     "location" : {
-      "x" : 0,
-      "y" : 0
+      "x" : 100,
+      "y" : 150
     },
     "size": {
       "width": 20,
@@ -26,8 +38,8 @@
   } ],
   "carriers" : [ {
     "location" : {
-      "x" : 0,
-      "y" : 0
+      "x" : 10,
+      "y" : 10
     }
   } ],
   "map" : {

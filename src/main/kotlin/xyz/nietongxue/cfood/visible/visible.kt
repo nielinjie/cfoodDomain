@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import xyz.nietongxue.cfood.UniverseConfig
 import xyz.nietongxue.cfood.domain.*
 import xyz.nietongxue.cfood.domain.facility.HouseService
+import xyz.nietongxue.cfood.domain.facility.Storage
 import xyz.nietongxue.cfood.domain.facility.Table
 import xyz.nietongxue.cfood.domain.staff.StaffService
 import xyz.nietongxue.cfood.domain.station.Counter
@@ -20,6 +21,7 @@ interface Model {
     object Table : Model
     object Stove : Model
     object Counter : Model
+    object Storage : Model
 }
 
 @JsonWithType
@@ -91,6 +93,7 @@ class VisibleService(
                         is Table -> Model.Table
                         is Stove -> Model.Stove
                         is Counter -> Model.Counter
+                        is Storage -> Model.Storage
                         else -> throw RuntimeException("Unknown facility type")
                     }
                 )

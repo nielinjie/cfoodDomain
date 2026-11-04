@@ -1,6 +1,7 @@
 package xyz.nietongxue.cfood.domain.path
 
 import xyz.nietongxue.cfood.domain.Position
+import xyz.nietongxue.cfood.domain.map.GameMap
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.sqrt

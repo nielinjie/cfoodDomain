@@ -2,6 +2,7 @@ package xyz.nietongxue.cfood
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.event.ApplicationReadyEvent
+import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.event.ContextClosedEvent
@@ -10,7 +11,7 @@ import org.springframework.scheduling.TaskScheduler
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 import org.springframework.stereotype.Component
 import xyz.nietongxue.cfood.domain.Location
-import xyz.nietongxue.cfood.domain.path.LocalMap
+import xyz.nietongxue.cfood.domain.map.SimpleMap
 
 @SpringBootApplication(scanBasePackages = ["xyz.nietongxue.cfood"])
 class Main {
@@ -18,7 +19,7 @@ class Main {
 
 
 fun main() {
-    org.springframework.boot.runApplication<Main>()
+    runApplication<Main>()
 }
 
 @Component
@@ -31,8 +32,8 @@ class ApplicationLifecycleListener(
         println("ApplicationContext is ready: ${event.applicationContext}")
         universe.start()
         with(universe.world) {
-            objectService.inputByCode("TOMATO", 10, Location.XY(3, 5))
-            objectService.inputByCode("EGG", 10, Location.XY(5, 7))
+            objectService.inputByCode("TOMATO", 10, Location.XY(200, 200))
+            objectService.inputByCode("EGG", 10, Location.XY(200, 200))
         }
     }
 
@@ -48,8 +49,8 @@ class ApplicationLifecycleListener(
 class Config {
 
     @Bean
-    fun localMap(): LocalMap {
-        return LocalMap(10, 10)
+    fun localMap(): SimpleMap {
+        return SimpleMap(10, 10)
     }
 
     @Bean

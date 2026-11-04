@@ -4,7 +4,7 @@ import arrow.core.Either
 import arrow.core.right
 import xyz.nietongxue.cfood.domain.Direction.*
 import xyz.nietongxue.cfood.domain.action.*
-import xyz.nietongxue.cfood.domain.path.GameMap
+import xyz.nietongxue.cfood.domain.map.GameMap
 import xyz.nietongxue.cfood.domain.path.PathFinder
 import xyz.nietongxue.common.response.ResponseChainResult
 import kotlin.math.sqrt
@@ -48,6 +48,8 @@ enum class Direction {
         }
     }
 }
+
+
 
 /**
  * dy/dx

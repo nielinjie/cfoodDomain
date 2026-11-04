@@ -1,4 +1,4 @@
-package xyz.nietongxue.cfood.domain.path
+package xyz.nietongxue.cfood.domain.map
 
 interface GameMap {
     /** 地图宽度  */
@@ -19,7 +19,7 @@ interface GameMap {
         return 1
     }
 }
-class LocalMap(override val width: Int, override val height: Int) : GameMap {
+class SimpleMap(override val width: Int, override val height: Int) : GameMap {
     override fun isWalkable(x: Int, y: Int): Boolean {
         return true
     }
