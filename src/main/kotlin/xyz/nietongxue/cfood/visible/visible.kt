@@ -3,10 +3,15 @@ package xyz.nietongxue.cfood.visible
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.stereotype.Service
 import xyz.nietongxue.cfood.UniverseConfig
-import xyz.nietongxue.cfood.domain.*
+import xyz.nietongxue.cfood.domain.ObjectService
+import xyz.nietongxue.cfood.domain.Position
+import xyz.nietongxue.cfood.domain.Size
 import xyz.nietongxue.cfood.domain.facility.HouseService
 import xyz.nietongxue.cfood.domain.facility.Storage
 import xyz.nietongxue.cfood.domain.facility.Table
+import xyz.nietongxue.cfood.domain.move.Direction
+import xyz.nietongxue.cfood.domain.move.Movable
+import xyz.nietongxue.cfood.domain.move.Speed
 import xyz.nietongxue.cfood.domain.staff.StaffService
 import xyz.nietongxue.cfood.domain.station.Counter
 import xyz.nietongxue.cfood.domain.station.Stove

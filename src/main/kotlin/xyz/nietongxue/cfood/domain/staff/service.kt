@@ -1,7 +1,7 @@
 package xyz.nietongxue.cfood.domain.staff
 
 import org.springframework.stereotype.Service
-import xyz.nietongxue.cfood.domain.Movable
+import xyz.nietongxue.cfood.domain.move.Movable
 import xyz.nietongxue.common.base.HasId
 
 

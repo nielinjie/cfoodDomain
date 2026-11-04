@@ -13,8 +13,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 @RestController
 class VisibleController(
-    val visibleService: VisibleService, val world: World
-    ,
+    val visibleService: VisibleService, val world: World,
     val universeConfig: UniverseConfig
 ) {
 

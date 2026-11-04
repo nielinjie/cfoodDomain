@@ -5,14 +5,15 @@ import arrow.core.left
 import arrow.core.right
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import xyz.nietongxue.common.response.ResponseChainResult
 import xyz.nietongxue.common.base.Record
+import xyz.nietongxue.common.response.ResponseChainResult
 
 
 /**
  * 对特定 action 动作的实现。
  * 对 Action 的处理，体现了 Actor 的能力，所以叫 ability
  */
+
 abstract class Ability {
     typealias DoAction = Either<ResponseChainResult.NotMe, ActionResult>
 

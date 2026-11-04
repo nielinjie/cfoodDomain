@@ -1,9 +1,9 @@
 package xyz.nietongxue.cfood.domain.patron
 
 import xyz.nietongxue.cfood.domain.Location
-import xyz.nietongxue.cfood.domain.Speed
 import xyz.nietongxue.cfood.domain.action.Ability
 import xyz.nietongxue.cfood.domain.action.Actor
+import xyz.nietongxue.cfood.domain.move.Speed
 import xyz.nietongxue.common.base.Id
 
 /**

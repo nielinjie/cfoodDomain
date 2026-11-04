@@ -1,9 +1,9 @@
 package xyz.nietongxue.cfood.domain.facility
 
 import org.springframework.stereotype.Service
-import xyz.nietongxue.cfood.domain.HasLocation
 import xyz.nietongxue.cfood.domain.Position
 import xyz.nietongxue.cfood.domain.Size
+import xyz.nietongxue.cfood.domain.move.HasLocation
 import xyz.nietongxue.common.base.HasId
 import xyz.nietongxue.common.base.HasName
 import xyz.nietongxue.common.base.Id

@@ -6,6 +6,7 @@ import arrow.core.right
 import xyz.nietongxue.cfood.domain.*
 import xyz.nietongxue.cfood.domain.action.*
 import xyz.nietongxue.cfood.domain.logistic.LogisticService
+import xyz.nietongxue.cfood.domain.move.HasLocation
 import xyz.nietongxue.cfood.domain.station.Station
 import xyz.nietongxue.common.base.stuff
 import xyz.nietongxue.common.response.ResponseChainResult
@@ -15,6 +16,9 @@ interface OperationHandler {
     val task: Operation
 }
 
+/**
+ * 执行步骤的能力。
+ */
 class OperateAbility(
     val actor: Actor,
     val operationTaskHandle: OperationTaskHandle,
